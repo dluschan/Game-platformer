@@ -37,7 +37,18 @@ while running:
         player.y = ground.top - player.height
         vel_y = 0
 
-п
+    if player.colliderect(platform):
+        if player.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
+            player.y = platform.top - player.height
+            vel_y = 0
+        elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
+            player.y = platform.bottom
+            vel_y = 0
+        elif player.colliderect(platform.left, platform.top, 1, platform.height):
+            player.x = platform.left - player.width
+        elif player.colliderect(platform.right, platform.top, 1, platform.height):
+            player.x = platform.right
+
     screen.fill((30, 30, 30))
     pygame.draw.rect(screen, (200, 200, 200), ground)
     pygame.draw.rect(screen, (100, 180, 255), player)
