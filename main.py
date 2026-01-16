@@ -11,6 +11,7 @@ LEVEL_WIDTH = 2000
 player = pygame.Rect(100, 100, 40, 60)
 platform = pygame.Rect(600, 450, 120, 10)
 ground = pygame.Rect(0, 550, LEVEL_WIDTH, 50)
+obstacle = pygame.Rect(420, 350, 100, 10)
 
 vel_y = 0
 gravity = 0.5
@@ -18,8 +19,6 @@ speed = 5
 
 camera_x = 0
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
-obstacle = pygame.Rect(420, 350, 100, 10)
-ground = pygame.Rect(0, 550, 800, 50)
 
 running = True
 while running:
@@ -70,11 +69,7 @@ while running:
     camera_x = max(0, min(camera_x, LEVEL_WIDTH - WIDTH))
 
     screen.fill((30, 30, 30))
-    pygame.draw.rect(screen, (200, 200, 200), ground)
-    pygame.draw.rect(screen, (100, 180, 255), player)
-    pygame.draw.rect(screen, (100, 255, 100), platform)
-    pygame.draw.rect(screen, (200, 10, 20), obstacle )
-
+    pygame.draw.rect(screen, (200, 10, 20), obstacle.move(-camera_x, 0))
     pygame.draw.rect(screen, (200, 200, 200), ground.move(-camera_x, 0))
     pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
     pygame.draw.rect(screen, (100, 180, 255), player.move(-camera_x, 0))
