@@ -11,7 +11,7 @@ platform = pygame.Rect(300, 450, 100, 10)
 vel_y = 0
 gravity = 0.5
 speed = 5
-
+obstacle = pygame.Rect(420, 350, 100, 10)
 ground = pygame.Rect(0, 550, 800, 50)
 
 running = True
@@ -48,12 +48,13 @@ while running:
             player.x = platform.left - player.width
         elif player.colliderect(platform.right, platform.top, 1, platform.height):
             player.x = platform.right
-
+    if player.colliderect(obstacle):
+        running = False
     screen.fill((30, 30, 30))
     pygame.draw.rect(screen, (200, 200, 200), ground)
     pygame.draw.rect(screen, (100, 180, 255), player)
     pygame.draw.rect(screen, (100, 255, 100), platform)
-
+    pygame.draw.rect(screen, (200, 10, 20), obstacle )
     pygame.display.flip()
     clock.tick(60)
 
