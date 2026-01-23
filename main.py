@@ -27,9 +27,9 @@ while running:
             running = False
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] and player.left > 0:
         player.x -= speed
-    if keys[pygame.K_RIGHT]:
+    if keys[pygame.K_RIGHT] and player.right < LEVEL_WIDTH:
         player.x += speed
     if keys[pygame.K_SPACE] and player.y == ground.top - player.height and player.right > ground.left and player.left < ground.right:
         vel_y = -12
