@@ -5,10 +5,13 @@ pygame.init()
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
+lives = 3
 
 LEVEL_WIDTH = 2000
+START_X = 100
+START_Y = 100
 
-player = pygame.Rect(100, 100, 40, 60)
+player = pygame.Rect(START_X, START_Y, 40, 60)
 platform = pygame.Rect(600, 450, 120, 10)
 ground = pygame.Rect(0, 550, LEVEL_WIDTH, 50)
 obstacle = pygame.Rect(420, 350, 100, 10)
@@ -55,7 +58,11 @@ while running:
         elif player.colliderect(platform.right, platform.top, 1, platform.height):
             player.x = platform.right
     if player.colliderect(obstacle):
-        running = False
+        player.x = START_X
+        player.y = START_Y
+        lives -= 1
+        if lives == 0:
+            running = False
 
     left_border = camera_x + CAMERA_MARGIN
     right_border = camera_x + WIDTH - CAMERA_MARGIN
