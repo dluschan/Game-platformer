@@ -1,5 +1,17 @@
 import pygame
 
+
+def show_message(screen, text, duration=2000):
+    font = pygame.font.SysFont(None, 72)
+    message = font.render(text, True, (255, 255, 255))
+    rect = message.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+
+    screen.fill((0, 0, 0))
+    screen.blit(message, rect)
+    pygame.display.flip()
+    pygame.time.delay(duration)
+
+
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
@@ -43,6 +55,7 @@ while running:
         vel_y = 0
 
     if player.colliderect(platform):
+        show_message(screen, "TOUCH!!!")
         if player.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
             player.y = platform.top - player.height
             vel_y = 0
