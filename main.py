@@ -1,5 +1,15 @@
 import pygame
 
+def show_message(screen, text, duration=2000):
+    font = pygame.font.SysFont(None, 72)
+    message = font.render(text, True, (255, 255, 255))
+    rect = message.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+
+    screen.fill((0, 0, 0))
+    screen.blit(message, rect)
+    pygame.display.flip()
+    pygame.time.delay(duration)  # задержка в миллисекундах
+
 pygame.init()
 
 WIDTH, HEIGHT = 800, 600
@@ -61,10 +71,12 @@ while running:
         elif player.colliderect(platform.right, platform.top, 1, platform.height):
             player.x = platform.right
     if player.colliderect(obstacle):
+        show_message(screen, "TOUCH!!!")
         player.x = START_X
         player.y = START_Y
         lives -= 1
         if lives == 0:
+            show_message(screen, "GAME OVER!!!")
             running = False
 
     left_border = camera_x + CAMERA_MARGIN
