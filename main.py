@@ -26,11 +26,12 @@ LEVEL_WIDTH = 3000
 START_X = 100
 START_Y = 100
 
-FRAME_WIDTH = 32
-FRAME_HEIGHT = 76
+SCALE = 1.5
+FRAME_WIDTH = 27 * SCALE
+FRAME_HEIGHT = 48 * SCALE
 FRAMES = 3
 
-player_image = pygame.image.load("player.png").convert_alpha()
+player_image = pygame.image.load("person.png").convert_alpha()
 player_image = pygame.transform.scale_by(player_image, SCALE)
 jump_sound = pygame.mixer.Sound("jump.wav")
 hit_sound  = pygame.mixer.Sound("hit.wav")
@@ -40,6 +41,7 @@ player_frames = []
 for i in range(FRAMES):
     frame = player_image.subsurface(pygame.Rect(i*FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT))
     player_frames.append(frame)
+jump_frame = player_image.subsurface(pygame.Rect(3*FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT))
 
 player = pygame.Rect(START_X, START_Y, FRAME_WIDTH, FRAME_HEIGHT)
 platforms = [
@@ -62,10 +64,10 @@ obstacles = [
 current_frame = 0
 frame_image = player_frames[current_frame]
 animation_timer = 0
-ANIMATION_SPEED = 10
+ANIMATION_SPEED = 36
 vel_y = 0
 gravity = 0.5
-MIN_SPEED, MAX_SPEED = 5, 10
+MIN_SPEED, MAX_SPEED = 5, 8
 speed = MIN_SPEED
 camera_x = 0
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
@@ -158,7 +160,6 @@ while running:
             current_frame = (current_frame + 1) % FRAMES
         else:
             current_frame = 0
-
 
     screen.fill((30, 30, 30))
     for obstacle in obstacles:
