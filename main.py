@@ -11,7 +11,7 @@ def show_message(screen, text, duration=1000):
     pygame.time.delay(duration)  # задержка в миллисекундах
 
 pygame.init()
-# pygame.mixer.init()
+pygame.mixer.init()
 
 # pygame.mixer.music.load("background.mp3")
 # pygame.mixer.music.play(-1)
@@ -33,6 +33,9 @@ FRAMES = 3
 player_image = pygame.image.load("person.png").convert_alpha()
 # jump_sound = pygame.mixer.Sound("jump.wav")
 # hit_sound  = pygame.mixer.Sound("hit.wav")
+jump_sound = pygame.mixer.Sound("jump.wav")
+hit_sound  = pygame.mixer.Sound("hit.wav")
+win_sound = pygame.mixer.Sound("win.wav")
 
 player_frames = []
 for i in range(FRAMES):
@@ -87,11 +90,11 @@ while running:
         moving = True
     if keys[pygame.K_SPACE] and player.y == ground.top - player.height and player.right > ground.left and player.left < ground.right:
         vel_y = -12
-        # jump_sound.play()
+        jump_sound.play()
     for platform in platforms:
         if keys[pygame.K_SPACE] and player.y == platform.top - player.height and player.right > platform.left and player.left < platform.right:
             vel_y = -12
-            # jump_sound.play()
+            jump_sound.play()
     if keys[pygame.K_LCTRL] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
         speed = min(speed + 1, MAX_SPEED)
     else:
@@ -107,7 +110,7 @@ while running:
     if player.colliderect(finish_platform):
         player.y = finish_platform.top - player.height
         vel_y = 0
-        # win_sound.play()
+        win_sound.play()
         show_message(screen,"WIN!", 1700)
         running = False
 
@@ -128,13 +131,13 @@ while running:
     for obstacle in obstacles:
         if player.colliderect(obstacle):
             lives -= 1
-            # hit_sound.play()
+            hit_sound.play()
             player.x = START_X
             player.y = START_Y
             if lives != 0:
                 show_message(screen, "TOUCH!!!")
             else:
-                # hit_sound.play()
+                hit_sound.play()
                 show_message(screen, "GAME OVER!!!")
                 running = False
 
