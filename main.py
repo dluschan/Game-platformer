@@ -18,13 +18,16 @@ pygame.mixer.init()
 # pygame.mixer.music.set_volume(0.5)
 
 WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
 lives = 3
 
 LEVEL_WIDTH = 4000
 START_X = 100
 START_Y = 100
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+background = pygame.image.load("background.png").convert()
+background = pygame.transform.scale(background, (LEVEL_WIDTH, HEIGHT))  # растянуть под уровень
 
 SCALE = 1.5
 FRAME_WIDTH = 27 * SCALE
@@ -171,7 +174,7 @@ while running:
         else:
             current_frame = 0
 
-    screen.fill((30, 30, 30))
+    screen.blit(background, (-camera_x * 0.3, 0))
     for obstacle in obstacles:
         pygame.draw.rect(screen, (200, 10, 20), obstacle.move(-camera_x, 0))
     pygame.draw.rect(screen, (200, 200, 200), ground.move(-camera_x, 0))
