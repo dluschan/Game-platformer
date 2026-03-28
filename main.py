@@ -1,12 +1,12 @@
 import pygame
 
-def show_message(screen, text, duration=1000):
+def show_message(surface, text, duration=1000):
     font = pygame.font.SysFont(None, 72)
     message = font.render(text, True, (255, 255, 255))
-    rect = message.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+    rect = message.get_rect(center=(surface.get_width() // 2, surface.get_height() // 2))
 
-    screen.fill((0, 0, 0))
-    screen.blit(message, rect)
+    surface.fill((0, 0, 0))
+    surface.blit(message, rect)
     pygame.display.flip()
     pygame.time.delay(duration)  # задержка в миллисекундах
 
