@@ -86,7 +86,6 @@ player_frames = []
 for i in range(FRAMES):
     frame = player_image.subsurface(pygame.Rect(i*FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT))
     player_frames.append(frame)
-jump_frame = player_image.subsurface(pygame.Rect(3*FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT))
 
 player = pygame.Rect(levels[current_level].start_x, levels[current_level].start_y, FRAME_WIDTH, FRAME_HEIGHT)
 
