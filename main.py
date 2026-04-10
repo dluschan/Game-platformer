@@ -95,7 +95,10 @@ frame_image = player_frames[current_frame]
 animation_timer = 0
 ANIMATION_SPEED = 36
 vel_y = 0
-gravity = 0.5
+gravity = 0.6
+low_gravity = 0.3
+on_ground = False
+jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
 speed = MIN_SPEED
 camera_x = 0
@@ -106,6 +109,20 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if on_ground:
+                    vel_y = -12
+                    on_ground = False
+                    jump_held = True
+                    jump_sound.play()
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_SPACE:
+                if not on_ground:
+                    jump_held = False
+
 
     keys = pygame.key.get_pressed()
     moving = False
@@ -118,28 +135,26 @@ while running:
         player.x += speed
         frame_image = player_frames[current_frame]
         moving = True
-    if keys[pygame.K_SPACE] and player.y == levels[current_level].ground.top - player.height and player.right > levels[current_level].ground.left and player.left < levels[current_level].ground.right:
-        vel_y = -12
-        jump_sound.play()
-    for platform in levels[current_level].platforms:
-        if keys[pygame.K_SPACE] and player.y == platform.top - player.height and player.right > platform.left and player.left < platform.right:
-            vel_y = -12
-            jump_sound.play()
     if keys[pygame.K_LCTRL] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
         speed = min(speed + 1, MAX_SPEED)
     else:
         speed = max(speed - 1, MIN_SPEED)
 
-    vel_y += gravity
+    if jump_held:
+        vel_y += low_gravity
+    else:
+        vel_y += gravity
     player.y += vel_y
 
     if player.colliderect(levels[current_level].ground):
         player.y = levels[current_level].ground.top - player.height
         vel_y = 0
+        on_ground = True
 
     if player.colliderect(levels[current_level].finish_platform):
         player.y = levels[current_level].finish_platform.top - player.height
         vel_y = 0
+        on_ground = True
         win_sound.play()
         show_message(screen,"WIN!", 1700)
         current_level = (current_level + 1) % len(levels)
@@ -150,9 +165,11 @@ while running:
             if player.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
                 player.y = platform.top - player.height
                 vel_y = 0
+                on_ground = True
             elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
                 player.y = platform.bottom
                 vel_y = 0
+                on_ground = True
             elif player.colliderect(platform.left, platform.top, 1, platform.height):
                 player.x = platform.left - player.width
             elif player.colliderect(platform.right, platform.top, 1, platform.height):
