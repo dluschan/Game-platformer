@@ -1,4 +1,5 @@
 import pygame
+from pygame import font
 
 
 class Level:
@@ -189,6 +190,9 @@ while running:
             current_frame = 0
 
     screen.blit(background, (-camera_x * 0.3, 0))
+    font = pygame.font.SysFont(None, 32)
+    lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (10, 10))
     for obstacle in levels[current_level].obstacles:
         pygame.draw.rect(screen, (200, 10, 20), obstacle.move(-camera_x, 0))
     pygame.draw.rect(screen, (200, 200, 200), levels[current_level].ground.move(-camera_x, 0))
