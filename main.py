@@ -27,13 +27,13 @@ def show_message(surface, text, duration=1000):
 pygame.init()
 pygame.mixer.init()
 
-# pygame.mixer.music.load("background.mp3")
-# pygame.mixer.music.play(-1)
-# pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.5)
 
 WIDTH, HEIGHT = 800, 600
 clock = pygame.time.Clock()
-lives = 3
+lives = 4
 
 level_0 = Level(width = 4000,
     start_x = 100,
