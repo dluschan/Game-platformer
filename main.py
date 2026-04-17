@@ -169,7 +169,7 @@ while running:
             elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
                 player.y = platform.bottom
                 vel_y = 0
-                on_ground = True
+
             elif player.colliderect(platform.left, platform.top, 1, platform.height):
                 player.x = platform.left - player.width
             elif player.colliderect(platform.right, platform.top, 1, platform.height):
