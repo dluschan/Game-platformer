@@ -98,6 +98,7 @@ vel_y = 0
 gravity = 0.6
 low_gravity = 0.3
 on_ground = False
+can_jump = False
 jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
 speed = MIN_SPEED
@@ -112,15 +113,15 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if on_ground:
+                if can_jump:
                     vel_y = -12
-                    on_ground = False
+                    can_jump = False
                     jump_held = True
                     jump_sound.play()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_SPACE:
-                if not on_ground:
+                if not can_jump:
                     jump_held = False
 
 
@@ -145,7 +146,7 @@ while running:
     else:
         vel_y += gravity
     player.y += vel_y
-
+    on_ground = False
     if player.colliderect(levels[current_level].ground):
         player.y = levels[current_level].ground.top - player.height
         vel_y = 0
@@ -159,13 +160,13 @@ while running:
         show_message(screen,"WIN!", 1700)
         current_level = (current_level + 1) % len(levels)
         # running = False
-
+    on_platform = False
     for platform in levels[current_level].platforms:
         if player.colliderect(platform):
             if player.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
                 player.y = platform.top - player.height
                 vel_y = 0
-                on_ground = True
+                on_platform = True
             elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
                 player.y = platform.bottom
                 vel_y = 0
@@ -174,6 +175,7 @@ while running:
                 player.x = platform.left - player.width
             elif player.colliderect(platform.right, platform.top, 1, platform.height):
                 player.x = platform.right
+    can_jump = on_platform or on_ground
     for obstacle in levels[current_level].obstacles:
         if player.colliderect(obstacle):
             lives -= 1
