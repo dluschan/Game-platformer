@@ -83,26 +83,42 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 background = pygame.image.load("background.png").convert()
 background = pygame.transform.scale(background, (levels[current_level].width, HEIGHT))  # растянуть под уровень
 
-SCALE = 1.5
-FRAME_WIDTH = 27 * SCALE
-FRAME_HEIGHT = 48 * SCALE
-FRAMES = 3
+PLAYER_SCALE = 1.5
+FRAME_SCALE = 1.5
+FRAME_PLAYER_WIDTH = 27 * PLAYER_SCALE
+FRAME_PLAYER_HEIGHT = 48 * PLAYER_SCALE
+FRAME_ENEMY_WIDTH = 20 * PLAYER_SCALE
+FRAME_ENEMY_HEIGHT = 32 * PLAYER_SCALE
+PLAYER_FRAMES = 3
+ENEMY_FRAMES = 3
+
 
 player_image = pygame.image.load("person.png").convert_alpha()
-player_image = pygame.transform.scale_by(player_image, SCALE)
+player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
+enemy_image = pygame.image.load("enemy.png").convert_alpha()
+enemy_image = pygame.transform.scale_by(enemy_image, PLAYER_SCALE)
 jump_sound = pygame.mixer.Sound("jump.wav")
 hit_sound  = pygame.mixer.Sound("hit.wav")
 win_sound = pygame.mixer.Sound("win.wav")
 
 player_frames = []
-for i in range(FRAMES):
-    frame = player_image.subsurface(pygame.Rect(i*FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT))
+for i in range(PLAYER_FRAMES):
+    frame = player_image.subsurface(pygame.Rect(i * FRAME_PLAYER_WIDTH, 0, FRAME_PLAYER_WIDTH, FRAME_PLAYER_HEIGHT))
     player_frames.append(frame)
 
-player = pygame.Rect(levels[current_level].start_x, levels[current_level].start_y, FRAME_WIDTH, FRAME_HEIGHT)
+player = pygame.Rect(levels[current_level].start_x, levels[current_level].start_y, FRAME_PLAYER_WIDTH, FRAME_PLAYER_HEIGHT)
 
-current_frame = 0
-frame_image = player_frames[current_frame]
+enemy_frames = []
+for i in range(ENEMY_FRAMES):
+    frame = enemy_image.subsurface(pygame.Rect(i * FRAME_ENEMY_WIDTH, 0, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT))
+    enemy_frames.append(frame)
+
+enemy = pygame.Rect(300, 500, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
+
+player_current_frame = 0
+enemy_current_frame = 0
+player_frame_image = player_frames[player_current_frame]
+enemy_frame_image = enemy_frames[enemy_current_frame]
 animation_timer = 0
 ANIMATION_SPEED = 36
 vel_y = 0
@@ -139,12 +155,12 @@ while running:
     moving = False
     if keys[pygame.K_LEFT] and player.left > 0:
         player.x -= speed
-        frame_image = player_frames[current_frame]
-        frame_image = pygame.transform.flip(frame_image, True, False)
+        player_frame_image = player_frames[player_current_frame]
+        player_frame_image = pygame.transform.flip(player_frame_image, True, False)
         moving = True
     if keys[pygame.K_RIGHT] and player.right < levels[current_level].width:
         player.x += speed
-        frame_image = player_frames[current_frame]
+        player_frame_image = player_frames[player_current_frame]
         moving = True
 
     if jump_held:
@@ -209,9 +225,9 @@ while running:
     if animation_timer >= ANIMATION_SPEED:
         animation_timer = 0
         if moving:
-            current_frame = (current_frame + 1) % FRAMES
+            player_current_frame = (player_current_frame + 1) % PLAYER_FRAMES
         else:
-            current_frame = 0
+            player_current_frame = 0
 
     screen.blit(background, (-camera_x * 0.3, 0))
     font = pygame.font.SysFont(None, 32)
@@ -223,8 +239,8 @@ while running:
     pygame.draw.rect(screen, (159, 10, 100), levels[current_level].finish_platform.move(-camera_x, 0))
     for platform in levels[current_level].platforms:
         pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
-    screen.blit(frame_image, (player.x - camera_x, player.y))
-
+    screen.blit(player_frame_image, (player.x - camera_x, player.y))
+    screen.blit(enemy_frame_image, (enemy.x, enemy.y))
     pygame.display.flip()
     clock.tick(60)
 
