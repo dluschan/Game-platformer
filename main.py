@@ -29,21 +29,21 @@ pygame.mixer.init()
 
 pygame.mixer.music.load("background.mp3")
 pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.set_volume(0.3)
 
 WIDTH, HEIGHT = 800, 600
 clock = pygame.time.Clock()
 lives = 4
 
-level_0 = Level(width = 4000,
+level_0 = Level(width = 8000,
     start_x = 100,
     start_y = 100,
     platforms = [
         pygame.Rect(600, 450, 120, 10),
         pygame.Rect(850, 350, 120, 10),
         pygame.Rect(1010, 240, 120, 10),
-        pygame.Rect(1280, 300, 120, 10),
-        pygame.Rect(1480, 200, 120, 10),
+        pygame.Rect(1260, 400, 120, 10),
+        pygame.Rect(1480, 230, 120, 10),
         pygame.Rect(1740, 300, 120, 10),
         pygame.Rect(1940, 360, 120, 10),
         pygame.Rect(2350 , 580, 150, 10),
@@ -52,16 +52,27 @@ level_0 = Level(width = 4000,
         pygame.Rect(3100, 280, 120, 10),
         pygame.Rect(3400, 200, 120, 10),
         pygame.Rect(3650, 350, 120, 10),
+        pygame.Rect(3990, 200, 120, 10),
+        pygame.Rect(4190, 310, 120, 10),
+        pygame.Rect(4480, 420, 120, 10),
+        pygame.Rect(4780, 250, 120, 10),
+        pygame.Rect(5020, 100, 120, 10),
+        pygame.Rect(5280, 300, 120, 10),
+        pygame.Rect(5700, 270, 120, 10),
+
     ],
-    finish_platform = pygame.Rect(3860, 450, 140, 10),
+    finish_platform = pygame.Rect(7860, 450, 140, 10),
     ground = pygame.Rect(0, 550, 600, 50),
     obstacles = [
         pygame.Rect(420, 350, 100, 10),
         pygame.Rect(1600, 150, 100, 10),
-        pygame.Rect(600, 700, 3400, 10),
+        pygame.Rect(600, 700, 8400, 10),
         pygame.Rect(2270, 350, 10, 120),
         pygame.Rect(3820, 270, 10, 120),
         pygame.Rect(600, 700, 3400, 10),
+        pygame.Rect(5480, 250, 10, 100),
+
+
     ]
               )
 
@@ -96,8 +107,7 @@ animation_timer = 0
 ANIMATION_SPEED = 36
 vel_y = 0
 gravity = 0.6
-low_gravity = 0.3
-on_ground = False
+low_gravity = 0.34
 can_jump = False
 jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
