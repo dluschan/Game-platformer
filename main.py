@@ -151,7 +151,6 @@ while running:
     if player.colliderect(levels[current_level].finish_platform):
         player.y = levels[current_level].finish_platform.top - player.height
         vel_y = 0
-        on_ground = True
         win_sound.play()
         show_message(screen,"WIN!", 1700)
         current_level = (current_level + 1) % len(levels)
