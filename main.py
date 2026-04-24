@@ -136,10 +136,6 @@ while running:
         player.x += speed
         frame_image = player_frames[current_frame]
         moving = True
-    if keys[pygame.K_LCTRL] and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT]):
-        speed = min(speed + 1, MAX_SPEED)
-    else:
-        speed = max(speed - 1, MIN_SPEED)
 
     if jump_held:
         vel_y += low_gravity
