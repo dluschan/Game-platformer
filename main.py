@@ -256,7 +256,7 @@ while running:
     for platform in levels[current_level].platforms:
         pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
     screen.blit(player_frame_image, (player.x - camera_x, player.y))
-    screen.blit(enemy_frame_image, (enemy.x, enemy.y))
+    screen.blit(enemy_frame_image, (enemy.x - camera_x, enemy.y))
     pygame.display.flip()
     clock.tick(60)
 
