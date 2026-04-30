@@ -67,7 +67,7 @@ level_0 = Level(width = 8000,
         pygame.Rect(7490, 400, 120, 10),
     ],
     finish_platform = pygame.Rect(7860, 450, 140, 10),
-    ground = pygame.Rect(0, 550, 600, 50),
+    ground = [pygame.Rect(0, 550, 600, 50)],
     obstacles = [
         pygame.Rect(420, 350, 100, 10),
         pygame.Rect(1600, 150, 100, 10),
@@ -175,10 +175,11 @@ while running:
         vel_y += gravity
     player.y += vel_y
     on_ground = False
-    if player.colliderect(levels[current_level].ground):
-        player.y = levels[current_level].ground.top - player.height
-        vel_y = 0
-        on_ground = True
+    for ground in levels[current_level].ground:
+        if player.colliderect(ground):
+            player.y = ground.top - player.height
+            vel_y = 0
+            on_ground = True
 
     if player.colliderect(enemy):
         lives -= 1
@@ -264,7 +265,8 @@ while running:
     screen.blit(lives_text, (10, 10))
     for obstacle in levels[current_level].obstacles:
         pygame.draw.rect(screen, (200, 10, 20), obstacle.move(-camera_x, 0))
-    pygame.draw.rect(screen, (200, 200, 200), levels[current_level].ground.move(-camera_x, 0))
+    for ground in levels[current_level].ground:
+        pygame.draw.rect(screen, (200, 200, 200), ground.move(-camera_x, 0))
     pygame.draw.rect(screen, (159, 10, 100), levels[current_level].finish_platform.move(-camera_x, 0))
     for platform in levels[current_level].platforms:
         pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
