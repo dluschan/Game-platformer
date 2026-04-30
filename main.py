@@ -79,8 +79,31 @@ level_0 = Level(width = 8000,
         pygame.Rect(5980, 130, 10, 100),
     ]
 )
+level_1 = Level(width = 2000,
+    start_x = 100,
+    start_y = 100,
+    platforms = [
+        pygame.Rect(600, 450, 120, 10),
+        pygame.Rect(850, 350, 120, 10),
+        pygame.Rect(1010, 240, 120, 10),
+        pygame.Rect(1260, 400, 120, 10),
+        pygame.Rect(1480, 230, 120, 10),
+        pygame.Rect(1740, 300, 120, 10),
+    ],
+    finish_platform = pygame.Rect(1860, 450, 140, 10),
+    ground = [
+        pygame.Rect(0, 550, 600, 50),
+        pygame.Rect(700, 550, 1300, 50),
+    ],
+    obstacles = [
+        pygame.Rect(420, 350, 100, 10),
+        pygame.Rect(1600, 150, 100, 10),
+        pygame.Rect(600, 700, 8400, 10),
+        pygame.Rect(600, 700, 3400, 10),
+    ]
+)
 
-levels = [level_0, level_0]
+levels = [level_0, level_1]
 current_level = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
