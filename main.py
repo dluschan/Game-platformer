@@ -1,5 +1,4 @@
 import pygame
-from pygame import font
 
 
 class Level:
@@ -78,9 +77,8 @@ level_0 = Level(width = 8000,
         pygame.Rect(600, 700, 3400, 10),
         pygame.Rect(5480, 250, 10, 100),
         pygame.Rect(5980, 130, 10, 100),
-
     ]
-              )
+)
 
 levels = [level_0, level_0]
 current_level = 0
@@ -97,7 +95,6 @@ FRAME_ENEMY_WIDTH = 20 * ENEMY_SCALE
 FRAME_ENEMY_HEIGHT = 32 * ENEMY_SCALE
 PLAYER_FRAMES = 3
 ENEMY_FRAMES = 2
-
 
 player_image = pygame.image.load("person.png").convert_alpha()
 player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
@@ -156,7 +153,6 @@ while running:
                 if not can_jump:
                     jump_held = False
 
-
     keys = pygame.key.get_pressed()
     moving = False
     if keys[pygame.K_LEFT] and player.left > 0:
@@ -190,13 +186,14 @@ while running:
             hit_sound.play()
             show_message(screen, "GAME OVER!!!")
             running = False
+
     if player.colliderect(levels[current_level].finish_platform):
         player.y = levels[current_level].finish_platform.top - player.height
         vel_y = 0
         win_sound.play()
         show_message(screen,"WIN!", 1700)
         current_level = (current_level + 1) % len(levels)
-        # running = False
+
     on_platform = False
     for platform in levels[current_level].platforms:
         if player.colliderect(platform):
@@ -207,12 +204,12 @@ while running:
             elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
                 player.y = platform.bottom
                 vel_y = 0
-
             elif player.colliderect(platform.left, platform.top, 1, platform.height):
                 player.x = platform.left - player.width
             elif player.colliderect(platform.right, platform.top, 1, platform.height):
                 player.x = platform.right
     can_jump = on_platform or on_ground
+
     for obstacle in levels[current_level].obstacles:
         if player.colliderect(obstacle):
             lives -= 1
