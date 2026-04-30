@@ -59,7 +59,13 @@ level_0 = Level(width = 8000,
         pygame.Rect(5020, 100, 120, 10),
         pygame.Rect(5280, 300, 120, 10),
         pygame.Rect(5700, 270, 120, 10),
-
+        pygame.Rect(6120, 550, 210, 10),
+        pygame.Rect(6480, 360, 120, 10),
+        pygame.Rect(6750, 200, 120, 10),
+        pygame.Rect(7090, 270, 120, 10),
+        pygame.Rect(7090, 270, 120, 10),
+        pygame.Rect(7090, 270, 120, 10),
+        pygame.Rect(7490, 400, 120, 10),
     ],
     finish_platform = pygame.Rect(7860, 450, 140, 10),
     ground = pygame.Rect(0, 550, 600, 50),
@@ -71,7 +77,7 @@ level_0 = Level(width = 8000,
         pygame.Rect(3820, 270, 10, 120),
         pygame.Rect(600, 700, 3400, 10),
         pygame.Rect(5480, 250, 10, 100),
-
+        pygame.Rect(5980, 130, 10, 100),
 
     ]
               )
@@ -84,25 +90,25 @@ background = pygame.image.load("background.png").convert()
 background = pygame.transform.scale(background, (levels[current_level].width, HEIGHT))  # растянуть под уровень
 
 PLAYER_SCALE = 1.5
-FRAME_SCALE = 1.5
+ENEMY_SCALE = 2
 FRAME_PLAYER_WIDTH = 27 * PLAYER_SCALE
 FRAME_PLAYER_HEIGHT = 48 * PLAYER_SCALE
-FRAME_ENEMY_WIDTH = 20 * PLAYER_SCALE
-FRAME_ENEMY_HEIGHT = 32 * PLAYER_SCALE
+FRAME_ENEMY_WIDTH = 20 * ENEMY_SCALE
+FRAME_ENEMY_HEIGHT = 32 * ENEMY_SCALE
 PLAYER_FRAMES = 3
-ENEMY_FRAMES = 3
+ENEMY_FRAMES = 2
 
 
 player_image = pygame.image.load("person.png").convert_alpha()
 player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
 enemy_image = pygame.image.load("enemy.png").convert_alpha()
-enemy_image = pygame.transform.scale_by(enemy_image, PLAYER_SCALE)
+enemy_image = pygame.transform.scale_by(enemy_image, ENEMY_SCALE)
 jump_sound = pygame.mixer.Sound("jump.wav")
 hit_sound  = pygame.mixer.Sound("hit.wav")
 win_sound = pygame.mixer.Sound("win.wav")
 
 player_frames = []
-for i in range(PLAYER_FRAMES):
+for i in range( PLAYER_FRAMES):
     frame = player_image.subsurface(pygame.Rect(i * FRAME_PLAYER_WIDTH, 0, FRAME_PLAYER_WIDTH, FRAME_PLAYER_HEIGHT))
     player_frames.append(frame)
 
@@ -113,7 +119,7 @@ for i in range(ENEMY_FRAMES):
     frame = enemy_image.subsurface(pygame.Rect(i * FRAME_ENEMY_WIDTH, 0, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT))
     enemy_frames.append(frame)
 
-enemy = pygame.Rect(300, 500, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
+enemy = pygame.Rect(300,350, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
 
 player_current_frame = 0
 enemy_current_frame = 0
@@ -122,7 +128,7 @@ enemy_frame_image = enemy_frames[enemy_current_frame]
 animation_timer = 0
 ANIMATION_SPEED = 36
 vel_y = 0
-gravity = 0.6
+gravity = 0.55
 low_gravity = 0.34
 can_jump = False
 jump_held = False
@@ -174,6 +180,16 @@ while running:
         vel_y = 0
         on_ground = True
 
+    if player.colliderect(enemy):
+        lives -= 1
+        player.x = levels[current_level].start_x
+        player.y = levels[current_level].start_y
+        if lives != 0:
+            show_message(screen, "TOUCH!")
+        else:
+            hit_sound.play()
+            show_message(screen, "GAME OVER!!!")
+            running = False
     if player.colliderect(levels[current_level].finish_platform):
         player.y = levels[current_level].finish_platform.top - player.height
         vel_y = 0
