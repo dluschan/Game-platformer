@@ -116,7 +116,9 @@ for i in range(ENEMY_FRAMES):
     frame = enemy_image.subsurface(pygame.Rect(i * FRAME_ENEMY_WIDTH, 0, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT))
     enemy_frames.append(frame)
 
-enemy = pygame.Rect(300,350, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
+enemy_track = [(2000, 100), (1000, 300)]
+enemy = pygame.Rect(*enemy_track[0], FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
+enemy_target_index = 1
 
 player_current_frame = 0
 enemy_current_frame = 0
@@ -130,7 +132,9 @@ low_gravity = 0.34
 can_jump = False
 jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
-speed = MIN_SPEED
+player_speed = MIN_SPEED
+enemy_speed = 5
+
 camera_x = 0
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 
@@ -156,12 +160,12 @@ while running:
     keys = pygame.key.get_pressed()
     moving = False
     if keys[pygame.K_LEFT] and player.left > 0:
-        player.x -= speed
+        player.x -= player_speed
         player_frame_image = player_frames[player_current_frame]
         player_frame_image = pygame.transform.flip(player_frame_image, True, False)
         moving = True
     if keys[pygame.K_RIGHT] and player.right < levels[current_level].width:
-        player.x += speed
+        player.x += player_speed
         player_frame_image = player_frames[player_current_frame]
         moving = True
 
@@ -241,6 +245,17 @@ while running:
             player_current_frame = (player_current_frame + 1) % PLAYER_FRAMES
         else:
             player_current_frame = 0
+
+    target_x, target_y = enemy_track[enemy_target_index]
+    dx = target_x - enemy.x
+    dy = target_y - enemy.y
+    dist = (dx**2 + dy**2) ** 0.5
+    if dist != 0:
+        enemy.x += dx / dist * enemy_speed
+        enemy.y += dy / dist * enemy_speed
+
+    if dist < enemy_speed:
+        enemy_target_index = (enemy_target_index + 1) % len(enemy_track)
 
     screen.blit(background, (-camera_x * 0.3, 0))
     font = pygame.font.SysFont(None, 32)
