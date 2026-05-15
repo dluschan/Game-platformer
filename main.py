@@ -93,18 +93,19 @@ level_1 = Level(width = 2000,
     finish_platform = pygame.Rect(1860, 450, 140, 10),
     ground = [
         pygame.Rect(0, 550, 600, 50),
-        pygame.Rect(700, 550, 1300, 50),
+        pygame.Rect(800, 550, 1200, 50),
     ],
     obstacles = [
         pygame.Rect(420, 350, 100, 10),
         pygame.Rect(1600, 150, 100, 10),
-        pygame.Rect(600, 700, 8400, 10),
+        pygame.Rect(0, 700, 2000, 10),
         pygame.Rect(600, 700, 3400, 10),
     ]
 )
 
 levels = [level_0, level_1]
 current_level = 0
+running_enemy_vel_y = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 background = pygame.image.load("background.png").convert()
@@ -141,6 +142,7 @@ for i in range(ENEMY_FRAMES):
 
 enemy_track = [(2000, 100), (1000, 300)]
 enemy = pygame.Rect(*enemy_track[0], FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
+running_enemy = pygame.Rect(1900, 200, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
 enemy_target_index = 1
 
 player_current_frame = 0
@@ -282,6 +284,39 @@ while running:
     if dist < enemy_speed:
         enemy_target_index = (enemy_target_index + 1) % len(enemy_track)
 
+    running_enemy_on_ground = False
+    for ground in levels[current_level].ground:
+        if running_enemy.colliderect(ground):
+            running_enemy.y = ground.top - running_enemy.height
+            running_enemy_vel_y = 0
+            running_enemy_on_ground = True
+
+    running_enemy_on_platform = False
+    for platform in levels[current_level].platforms:
+        if running_enemy.colliderect(platform):
+            if running_enemy.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
+                running_enemy.y = platform.top - running_enemy.height
+                running_enemy_on_platform = True
+            elif running_enemy.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
+                running_enemy.y = platform.bottom
+            elif running_enemy.colliderect(platform.left, platform.top, 1, platform.height):
+                running_enemy.x = platform.left - running_enemy.width
+            elif running_enemy.colliderect(platform.right, platform.top, 1, platform.height):
+                running_enemy.x = platform.right
+    running_enemy_can_jump = running_enemy_on_platform or running_enemy_on_ground
+
+    running_enemy.x -= enemy_speed
+    if not running_enemy_can_jump:
+        running_enemy_vel_y += gravity
+    else:
+        running_enemy_vel_y = 0
+    running_enemy.y += running_enemy_vel_y
+
+    for obstacle in levels[current_level].obstacles:
+        if running_enemy.colliderect(obstacle):
+            running_enemy.x, running_enemy.y = 1900, 200
+
+
     screen.blit(background, (-camera_x * 0.3, 0))
     font = pygame.font.SysFont(None, 32)
     lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
@@ -295,6 +330,7 @@ while running:
         pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
     screen.blit(player_frame_image, (player.x - camera_x, player.y))
     screen.blit(enemy_frame_image, (enemy.x - camera_x, enemy.y))
+    screen.blit(enemy_frame_image, (running_enemy.x - camera_x, running_enemy.y))
     pygame.display.flip()
     clock.tick(60)
 
