@@ -206,7 +206,7 @@ while running:
             vel_y = 0
             on_ground = True
 
-    if player.colliderect(enemy):
+    if player.colliderect(enemy) or player.colliderect(running_enemy):
         lives -= 1
         player.x = levels[current_level].start_x
         player.y = levels[current_level].start_y
