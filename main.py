@@ -79,7 +79,7 @@ level_0 = Level(width = 8000,
         pygame.Rect(5980, 130, 10, 100),
     ]
 )
-level_1 = Level(width = 2000,
+level_1 = Level(width = 13000,
     start_x = 100,
     start_y = 100,
     platforms = [
@@ -268,11 +268,14 @@ while running:
     animation_timer += 1
     if animation_timer >= ANIMATION_SPEED:
         animation_timer = 0
+        enemy_current_frame = (enemy_current_frame + 1) % ENEMY_FRAMES
         if moving:
             player_current_frame = (player_current_frame + 1) % PLAYER_FRAMES
         else:
             player_current_frame = 0
 
+    enemy_frame_image = enemy_frames[enemy_current_frame]
+    enemy_frame_image = pygame.transform.flip(enemy_frame_image, True, False)
     target_x, target_y = enemy_track[enemy_target_index]
     dx = target_x - enemy.x
     dy = target_y - enemy.y
