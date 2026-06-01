@@ -157,7 +157,7 @@ low_gravity = 0.34
 can_jump = False
 jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
-player_speed = MIN_SPEED
+player_speed = 0
 enemy_speed = 5
 
 camera_x = 0
@@ -185,14 +185,23 @@ while running:
     keys = pygame.key.get_pressed()
     moving = False
     if keys[pygame.K_LEFT] and player.left > 0:
-        player.x -= player_speed
+        player_speed = max(player_speed - 1, - MIN_SPEED)
+        player.x += player_speed
         player_frame_image = player_frames[player_current_frame]
         player_frame_image = pygame.transform.flip(player_frame_image, True, False)
         moving = True
     if keys[pygame.K_RIGHT] and player.right < levels[current_level].width:
+        player_speed = min(player_speed + 1, MIN_SPEED)
         player.x += player_speed
         player_frame_image = player_frames[player_current_frame]
         moving = True
+
+    if moving == False and player_speed != 0:
+        if player_speed > 0:
+            player_speed -= 1
+        else:
+            player_speed += 1
+        player.x += player_speed
 
     if jump_held:
         vel_y += low_gravity
