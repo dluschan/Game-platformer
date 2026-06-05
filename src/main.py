@@ -26,7 +26,7 @@ def show_message(surface, text, duration=1000):
 pygame.init()
 pygame.mixer.init()
 
-pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.load("../background.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.3)
 
@@ -108,7 +108,7 @@ current_level = 0
 running_enemy_vel_y = 0
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-background = pygame.image.load("background.png").convert()
+background = pygame.image.load("../background.png").convert()
 background = pygame.transform.scale(background, (levels[current_level].width, HEIGHT))  # растянуть под уровень
 
 PLAYER_SCALE = 1.5
@@ -120,13 +120,13 @@ FRAME_ENEMY_HEIGHT = 32 * ENEMY_SCALE
 PLAYER_FRAMES = 3
 ENEMY_FRAMES = 2
 
-player_image = pygame.image.load("person.png").convert_alpha()
+player_image = pygame.image.load("../person.png").convert_alpha()
 player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
-enemy_image = pygame.image.load("enemy.png").convert_alpha()
+enemy_image = pygame.image.load("../enemy.png").convert_alpha()
 enemy_image = pygame.transform.scale_by(enemy_image, ENEMY_SCALE)
-jump_sound = pygame.mixer.Sound("jump.wav")
-hit_sound  = pygame.mixer.Sound("hit.wav")
-win_sound = pygame.mixer.Sound("win.wav")
+jump_sound = pygame.mixer.Sound("../jump.wav")
+hit_sound  = pygame.mixer.Sound("../hit.wav")
+win_sound = pygame.mixer.Sound("../win.wav")
 
 player_frames = []
 for i in range( PLAYER_FRAMES):
