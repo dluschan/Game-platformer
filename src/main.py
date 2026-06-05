@@ -13,12 +13,17 @@ def show_message(surface, text, duration=1000):
     pygame.time.delay(duration)  # задержка в миллисекундах
 
 
-pygame.init()
-pygame.mixer.init()
+class Game:
+    def __init__(self):
+        pygame.init()
+        pygame.mixer.init()
 
-pygame.mixer.music.load("../background.mp3")
-pygame.mixer.music.play(-1)
-pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.load("../background.mp3")
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.3)
+
+        self.running = True
+
 
 WIDTH, HEIGHT = 800, 600
 clock = pygame.time.Clock()
@@ -110,6 +115,9 @@ FRAME_ENEMY_HEIGHT = 32 * ENEMY_SCALE
 PLAYER_FRAMES = 3
 ENEMY_FRAMES = 2
 
+if __name__ == "__main__":
+    game = Game()
+
 player_image = pygame.image.load("../person.png").convert_alpha()
 player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
 enemy_image = pygame.image.load("../enemy.png").convert_alpha()
@@ -153,11 +161,10 @@ enemy_speed = 5
 camera_x = 0
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 
-running = True
-while running:
+while game.running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            game.running = False
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
@@ -214,7 +221,7 @@ while running:
         else:
             hit_sound.play()
             show_message(screen, "GAME OVER!!!")
-            running = False
+            game.running = False
 
     if player.colliderect(levels[current_level].finish_platform):
         win_sound.play()
@@ -251,7 +258,7 @@ while running:
             else:
                 hit_sound.play()
                 show_message(screen, "GAME OVER!!!")
-                running = False
+                game.running = False
 
     left_border = camera_x + CAMERA_MARGIN
     right_border = camera_x + WIDTH - CAMERA_MARGIN
