@@ -2,23 +2,15 @@ import pygame
 
 
 class Player:
-    def __init__(self, img_file_name, width, height, scale, frames, start_x, start_y, animation_speed):
-        self.player_image = pygame.image.load(img_file_name).convert_alpha()
-        self.player_image = pygame.transform.scale_by(self.player_image, scale)
+    def __init__(self, frames, start_x, start_y, animation_speed):
         self.frames = frames
-        self.moving = False
+        self.x_force_active = False
         self.on_ground = False
         self.animation_timer = 0
         self.animation_speed = animation_speed
-
-        self.player_frames = []
-        for i in range(frames):
-            frame = self.player_image.subsurface(pygame.Rect(i * width * scale, 0, width * scale, height * scale))
-            self.player_frames.append(frame)
-
         self.player_current_frame = 0
 
-        self.rect = pygame.Rect(start_x, start_y, width * scale, height * scale)
+        self.rect = pygame.Rect(start_x, start_y, self.frames[0].get_width(), self.frames[0].get_height())
         self.max_speed = 5
         self.velocity_x = 0
         self.velocity_y = 0
@@ -33,16 +25,16 @@ class Player:
             self.next_frame()
         self.velocity_y += gravity
 
-    def go_left(self):
-        self.moving = True
+    def left(self):
+        self.x_force_active = True
         self.velocity_x = max(self.velocity_x - 1, - self.max_speed)
 
-    def go_right(self):
-        self.moving = True
+    def right(self):
+        self.x_force_active = True
         self.velocity_x = min(self.velocity_x + 1, self.max_speed)
 
     def stop(self):
-        self.moving = False
+        self.x_force_active = False
 
     def respawn(self, x, y):
         self.rect.x = x
@@ -83,7 +75,7 @@ class Player:
         self.rect.y += self.velocity_y
 
     def horizontal_update(self):
-        if not self.moving and self.velocity_x:
+        if not self.x_force_active and self.velocity_x:
             self.go_by_inertia()
         self.rect.x += self.velocity_x
 
@@ -95,8 +87,8 @@ class Player:
 
     def get_frame(self):
         # TODO pygame.transform.flip
-        return self.player_frames[self.player_current_frame]
+        return self.frames[self.player_current_frame]
 
     def next_frame(self):
         # TODO if not moving: player_current_frame = 0
-        self.player_current_frame = (self.player_current_frame + 1) % self.frames
+        self.player_current_frame = (self.player_current_frame + 1) % len(self.frames)

@@ -20,7 +20,10 @@ class Game:
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.lives = 4
-        self.player = Player("../person.png", 27, 48, 1.5, 3, 100, 100, 36)
+        player_image = pygame.transform.scale_by(pygame.image.load("../person.png").convert_alpha(), 1.5)
+        player_frames = [player_image.subsurface(pygame.Rect(i * 27 * 1.5, 0, 27 * 1.5, 48 * 1.5)) for i in range(3)]
+
+        self.player = Player(player_frames,100, 100, 36)
         self.flying_enemy = FlyingEnemy("../enemy.png", 20, 32, 2, 2, 2000, 100, 36, [(2000, 100), (1000, 300)])
 
         self.running = True
@@ -159,10 +162,10 @@ class Game:
     def handle_keys(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.player.go_left()
+            self.player.left()
 
         if keys[pygame.K_RIGHT]:
-            self.player.go_right()
+            self.player.right()
 
         if keys[pygame.K_d]:
             self.debug = not self.debug
