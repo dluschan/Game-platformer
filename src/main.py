@@ -1,5 +1,8 @@
 import pygame
+
+from src.game import Game
 from src.level import Level
+from src.player import Player
 
 
 def show_message(surface, text, duration=1000):
@@ -11,18 +14,6 @@ def show_message(surface, text, duration=1000):
     surface.blit(message, rect)
     pygame.display.flip()
     pygame.time.delay(duration)  # задержка в миллисекундах
-
-
-class Game:
-    def __init__(self):
-        pygame.init()
-        pygame.mixer.init()
-
-        pygame.mixer.music.load("../background.mp3")
-        pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.3)
-
-        self.running = True
 
 
 WIDTH, HEIGHT = 800, 600
@@ -106,32 +97,20 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 background = pygame.image.load("../background.png").convert()
 background = pygame.transform.scale(background, (levels[current_level].width, HEIGHT))  # растянуть под уровень
 
-PLAYER_SCALE = 1.5
+player = Player("../person.png", 27, 48, 1.5, 3, 100, 100)
+
 ENEMY_SCALE = 2
-FRAME_PLAYER_WIDTH = 27 * PLAYER_SCALE
-FRAME_PLAYER_HEIGHT = 48 * PLAYER_SCALE
 FRAME_ENEMY_WIDTH = 20 * ENEMY_SCALE
 FRAME_ENEMY_HEIGHT = 32 * ENEMY_SCALE
-PLAYER_FRAMES = 3
 ENEMY_FRAMES = 2
 
-if __name__ == "__main__":
-    game = Game()
+game = Game()
 
-player_image = pygame.image.load("../person.png").convert_alpha()
-player_image = pygame.transform.scale_by(player_image, PLAYER_SCALE)
 enemy_image = pygame.image.load("../enemy.png").convert_alpha()
 enemy_image = pygame.transform.scale_by(enemy_image, ENEMY_SCALE)
 jump_sound = pygame.mixer.Sound("../jump.wav")
 hit_sound  = pygame.mixer.Sound("../hit.wav")
 win_sound = pygame.mixer.Sound("../win.wav")
-
-player_frames = []
-for i in range( PLAYER_FRAMES):
-    frame = player_image.subsurface(pygame.Rect(i * FRAME_PLAYER_WIDTH, 0, FRAME_PLAYER_WIDTH, FRAME_PLAYER_HEIGHT))
-    player_frames.append(frame)
-
-player = pygame.Rect(levels[current_level].start_x, levels[current_level].start_y, FRAME_PLAYER_WIDTH, FRAME_PLAYER_HEIGHT)
 
 enemy_frames = []
 for i in range(ENEMY_FRAMES):
@@ -143,9 +122,7 @@ enemy = pygame.Rect(*enemy_track[0], FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
 running_enemy = pygame.Rect(1900, 200, FRAME_ENEMY_WIDTH, FRAME_ENEMY_HEIGHT)
 enemy_target_index = 1
 
-player_current_frame = 0
 enemy_current_frame = 0
-player_frame_image = player_frames[player_current_frame]
 enemy_frame_image = enemy_frames[enemy_current_frame]
 animation_timer = 0
 ANIMATION_SPEED = 36
@@ -155,7 +132,6 @@ low_gravity = 0.34
 can_jump = False
 jump_held = False
 MIN_SPEED, MAX_SPEED = 5, 8
-player_speed = 0
 enemy_speed = 5
 
 camera_x = 0
@@ -181,41 +157,32 @@ while game.running:
 
     keys = pygame.key.get_pressed()
     moving = False
-    if keys[pygame.K_LEFT] and player.left > 0:
-        player_speed = max(player_speed - 1, - MIN_SPEED)
-        player.x += player_speed
-        player_frame_image = player_frames[player_current_frame]
-        player_frame_image = pygame.transform.flip(player_frame_image, True, False)
+    if keys[pygame.K_LEFT] and player.rect.left > 0:
+        player.go_left()
         moving = True
-    if keys[pygame.K_RIGHT] and player.right < levels[current_level].width:
-        player_speed = min(player_speed + 1, MIN_SPEED)
-        player.x += player_speed
-        player_frame_image = player_frames[player_current_frame]
+    if keys[pygame.K_RIGHT] and player.rect.right < levels[current_level].width:
+        player.go_right()
         moving = True
 
-    if moving == False and player_speed != 0:
-        if player_speed > 0:
-            player_speed -= 1
-        else:
-            player_speed += 1
-        player.x += player_speed
+    if moving == False and player.get_speed() != 0:
+        player.go_by_inertia()
 
     if jump_held:
         vel_y += low_gravity
     else:
         vel_y += gravity
-    player.y += vel_y
+    player.rect.y += vel_y
     on_ground = False
     for ground in levels[current_level].ground:
-        if player.colliderect(ground):
-            player.y = ground.top - player.height
+        if player.rect.colliderect(ground):
+            player.rect.y = ground.top - player.rect.height
             vel_y = 0
             on_ground = True
 
-    if player.colliderect(enemy) or player.colliderect(running_enemy):
+    if player.rect.colliderect(enemy) or player.rect.colliderect(running_enemy):
         lives -= 1
-        player.x = levels[current_level].start_x
-        player.y = levels[current_level].start_y
+        player.rect.x = levels[current_level].start_x
+        player.rect.y = levels[current_level].start_y
         if lives != 0:
             show_message(screen, "TOUCH!")
         else:
@@ -223,36 +190,36 @@ while game.running:
             show_message(screen, "GAME OVER!!!")
             game.running = False
 
-    if player.colliderect(levels[current_level].finish_platform):
+    if player.rect.colliderect(levels[current_level].finish_platform):
         win_sound.play()
         show_message(screen,"WIN!", 1700)
         current_level = (current_level + 1) % len(levels)
-        player.x = levels[current_level].start_x
-        player.y = levels[current_level].start_y
+        player.rect.x = levels[current_level].start_x
+        player.rect.y = levels[current_level].start_y
         vel_y = 0
 
     on_platform = False
     for platform in levels[current_level].platforms:
-        if player.colliderect(platform):
-            if player.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
-                player.y = platform.top - player.height
+        if player.rect.colliderect(platform):
+            if player.rect.colliderect(platform.left + 5, platform.top, platform.width - 10, 1):
+                player.rect.y = platform.top - player.rect.height
                 vel_y = 0
                 on_platform = True
-            elif player.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
-                player.y = platform.bottom
+            elif player.rect.colliderect(platform.left + 5, platform.bottom, platform.width - 10, 1):
+                player.rect.y = platform.bottom
                 vel_y = 0
-            elif player.colliderect(platform.left, platform.top, 1, platform.height):
-                player.x = platform.left - player.width
-            elif player.colliderect(platform.right, platform.top, 1, platform.height):
-                player.x = platform.right
+            elif player.rect.colliderect(platform.left, platform.top, 1, platform.height):
+                player.rect.x = platform.left - player.rect.width
+            elif player.rect.colliderect(platform.right, platform.top, 1, platform.height):
+                player.rect.x = platform.right
     can_jump = on_platform or on_ground
 
     for obstacle in levels[current_level].obstacles:
-        if player.colliderect(obstacle):
+        if player.rect.colliderect(obstacle):
             lives -= 1
             hit_sound.play()
-            player.x = levels[current_level].start_x
-            player.y = levels[current_level].start_y
+            player.rect.x = levels[current_level].start_x
+            player.rect.y = levels[current_level].start_y
             if lives != 0:
                 show_message(screen, "CRASH!!!")
             else:
@@ -263,10 +230,10 @@ while game.running:
     left_border = camera_x + CAMERA_MARGIN
     right_border = camera_x + WIDTH - CAMERA_MARGIN
 
-    if player.x < left_border:
-        camera_x -= left_border - player.x
-    elif player.x > right_border:
-        camera_x += player.x - right_border
+    if player.rect.x < left_border:
+        camera_x -= left_border - player.rect.x
+    elif player.rect.x > right_border:
+        camera_x += player.rect.x - right_border
 
     # ограничение камеры границами уровня
     camera_x = max(0, min(camera_x, levels[current_level].width - WIDTH))
@@ -276,9 +243,7 @@ while game.running:
         animation_timer = 0
         enemy_current_frame = (enemy_current_frame + 1) % ENEMY_FRAMES
         if moving:
-            player_current_frame = (player_current_frame + 1) % PLAYER_FRAMES
-        else:
-            player_current_frame = 0
+            player.next_frame()
 
     enemy_frame_image = enemy_frames[enemy_current_frame]
     enemy_frame_image = pygame.transform.flip(enemy_frame_image, True, False)
@@ -337,7 +302,7 @@ while game.running:
     pygame.draw.rect(screen, (159, 10, 100), levels[current_level].finish_platform.move(-camera_x, 0))
     for platform in levels[current_level].platforms:
         pygame.draw.rect(screen, (100, 255, 100), platform.move(-camera_x, 0))
-    screen.blit(player_frame_image, (player.x - camera_x, player.y))
+    screen.blit(player.get_frame(), (player.rect.x - camera_x, player.rect.y))
     screen.blit(enemy_frame_image, (enemy.x - camera_x, enemy.y))
     screen.blit(enemy_frame_image, (running_enemy.x - camera_x, running_enemy.y))
     pygame.display.flip()
