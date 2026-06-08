@@ -139,6 +139,9 @@ class Game:
         if keys[pygame.K_RIGHT]:
             self.player.go_right()
 
+        if keys[pygame.K_d]:
+            self.debug = not self.debug
+
     def run(self):
         try:
             while self.running:
