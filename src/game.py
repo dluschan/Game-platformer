@@ -4,7 +4,6 @@ from src.enemy import FlyingEnemy
 from src.player import Player
 
 WIDTH, HEIGHT = 800, 600
-GRAVITY, LOW_GRAVITY = 0.55, 0.34
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 
 class Game:
@@ -52,7 +51,7 @@ class Game:
                 self.resolve_player_enemies_collisions()
                 self.resolve_player_finish_collisions()
 
-                self.player.apply_gravity(LOW_GRAVITY if self.jump_held else GRAVITY)
+                self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
 
                 self.player.vertical_update()
                 self.resolve_player_vertical_collisions()
@@ -118,10 +117,9 @@ class Game:
     def resolve_player_enemies_collisions(self):
         for enemy in self.level.obstacles + [self.flying_enemy]:
             if self.player.rect.colliderect(enemy):
-                self.lives -= 1
                 self.hit_sound.play()
-                self.player.rect.x = self.level.start_x
-                self.player.rect.y = self.level.start_y
+                self.player.respawn(self.level.start_x, self.level.start_y)
+                self.lives -= 1
                 if self.lives != 0:
                     self.show_message("CRASH!!!")
                 else:
@@ -135,8 +133,7 @@ class Game:
             self.show_message("WIN!", 1700)
             self.current_level = (self.current_level + 1) % len(self.levels)
             self.level = self.levels[self.current_level]
-            self.player.rect.x = self.level.start_x
-            self.player.rect.y = self.level.start_y
+            self.player.respawn(self.level.start_x, self.level.start_y)
 
     def handle_events(self):
         for event in pygame.event.get():

@@ -44,6 +44,12 @@ class Player:
     def stop(self):
         self.moving = False
 
+    def respawn(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+        self.velocity_x = 0
+        self.velocity_y = 0
+
     def vertical_hit(self, rect):
         if self.velocity_y > 0:
             self.land_on(rect)
