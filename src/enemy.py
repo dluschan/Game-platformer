@@ -2,23 +2,14 @@ import pygame
 
 
 class FlyingEnemy:
-    def __init__(self, img_file_name, width, height, scale, frames, start_x, start_y, animation_speed, track):
-        self.player_image = pygame.image.load(img_file_name).convert_alpha()
-        self.player_image = pygame.transform.scale_by(self.player_image, scale)
+    def __init__(self, frames, start_x, start_y, animation_speed, track):
         self.frames = frames
         self.animation_timer = 0
         self.animation_speed = animation_speed
         self.track = track
-
-        self.player_frames = []
-        for i in range(frames):
-            frame = self.player_image.subsurface(pygame.Rect(i * width * scale, 0, width * scale, height * scale))
-            self.player_frames.append(frame)
-
         self.player_current_frame = 0
         self.enemy_target_index = 0
-
-        self.rect = pygame.Rect(start_x, start_y, width * scale, height * scale)
+        self.rect = pygame.Rect(start_x, start_y, self.frames[0].get_width(), self.frames[0].get_height())
         self.speed = 5
 
     def __str__(self):
@@ -38,7 +29,7 @@ class FlyingEnemy:
 
     def get_frame(self):
         # TODO pygame.transform.flip
-        return self.player_frames[self.player_current_frame]
+        return self.frames[self.player_current_frame]
 
     def next_frame(self):
-        self.player_current_frame = (self.player_current_frame + 1) % self.frames
+        self.player_current_frame = (self.player_current_frame + 1) % len(self.frames)

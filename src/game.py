@@ -24,7 +24,10 @@ class Game:
         player_frames = [player_image.subsurface(pygame.Rect(i * 27 * 1.5, 0, 27 * 1.5, 48 * 1.5)) for i in range(3)]
 
         self.player = Player(player_frames,100, 100, 36)
-        self.flying_enemy = FlyingEnemy("../enemy.png", 20, 32, 2, 2, 2000, 100, 36, [(2000, 100), (1000, 300)])
+
+        flying_enemy_image = pygame.transform.scale_by(pygame.image.load("../enemy.png").convert_alpha(), 2)
+        flying_enemy_frames = [flying_enemy_image.subsurface(pygame.Rect(i * 20 * 2, 0, 20 * 2, 32 * 2)) for i in range(2)]
+        self.flying_enemy = FlyingEnemy(flying_enemy_frames, 2000, 100, 36, [(2000, 100), (1000, 300)])
 
         self.running = True
         self.levels = levels
