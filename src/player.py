@@ -1,15 +1,15 @@
-from dataclasses import field
-
 import pygame
 
 
 class Player:
-    def __init__(self, img_file_name, width, height, scale, frames, start_x, start_y):
+    def __init__(self, img_file_name, width, height, scale, frames, start_x, start_y, animation_speed):
         self.player_image = pygame.image.load(img_file_name).convert_alpha()
         self.player_image = pygame.transform.scale_by(self.player_image, scale)
         self.frames = frames
         self.moving = False
         self.on_ground = False
+        self.animation_timer = 0
+        self.animation_speed = animation_speed
 
         self.player_frames = []
         for i in range(frames):
@@ -27,7 +27,10 @@ class Player:
         return '\n'.join(f'{k} = {repr(v)}' for k, v in self.__dict__.items())
 
     def apply_gravity(self, gravity):
-        # if not self.on_ground:
+        self.animation_timer += 1
+        if self.animation_timer >= self.animation_speed:
+            self.animation_timer = 0
+            self.next_frame()
         self.velocity_y += gravity
 
     def go_left(self):
@@ -76,9 +79,6 @@ class Player:
     def horizontal_update(self):
         if not self.moving and self.velocity_x:
             self.go_by_inertia()
-            self.next_frame()
-        elif self.moving:
-            self.next_frame()
         self.rect.x += self.velocity_x
 
     def go_by_inertia(self):
