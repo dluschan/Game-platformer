@@ -90,5 +90,7 @@ class Player:
         return self.frames[self.player_current_frame]
 
     def next_frame(self):
-        # TODO if not moving: player_current_frame = 0
-        self.player_current_frame = (self.player_current_frame + 1) % len(self.frames)
+        if self.velocity_x and self.on_ground:
+            self.player_current_frame = (self.player_current_frame + 1) % len(self.frames)
+        else:
+            self.player_current_frame = 0
