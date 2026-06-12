@@ -14,6 +14,7 @@ class Player:
         self.max_speed = 5
         self.velocity_x = 0
         self.velocity_y = 0
+        self.is_go_right = True
 
     def __str__(self):
         return '\n'.join(f'{k} = {repr(v)}' for k, v in self.__dict__.items())
@@ -28,10 +29,12 @@ class Player:
     def left(self):
         self.x_force_active = True
         self.velocity_x = max(self.velocity_x - 1, - self.max_speed)
+        self.is_go_right = False
 
     def right(self):
         self.x_force_active = True
         self.velocity_x = min(self.velocity_x + 1, self.max_speed)
+        self.is_go_right = True
 
     def stop(self):
         self.x_force_active = False
@@ -86,8 +89,11 @@ class Player:
             self.velocity_x += 1
 
     def get_frame(self):
-        # TODO pygame.transform.flip
-        return self.frames[self.player_current_frame]
+        if self.is_go_right:
+            return self.frames[self.player_current_frame]
+        else:
+            return pygame.transform.flip(self.frames[self.player_current_frame], True, False)
+
 
     def next_frame(self):
         if self.velocity_x and self.on_ground:
