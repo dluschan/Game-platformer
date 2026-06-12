@@ -70,6 +70,9 @@ class Player:
         if self.on_ground:
             self.on_ground = False
             self.velocity_y = -12
+            return True
+        else:
+            return False
 
     def fly(self):
         self.on_ground = False

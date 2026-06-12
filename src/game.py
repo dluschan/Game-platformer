@@ -148,9 +148,9 @@ class Game:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    self.player.jump()
-                    self.jump_held = True
-                    self.jump_sound.play() # TODO sound only with jump
+                    if self.player.jump():
+                        self.jump_held = True
+                        self.jump_sound.play()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
