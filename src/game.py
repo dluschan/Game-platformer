@@ -57,6 +57,7 @@ class Game:
                 self.resolve_player_enemies_collisions()
                 self.resolve_player_finish_collisions()
 
+                # TODO low gravity while falling if space keydown
                 self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
 
                 self.player.vertical_update()
