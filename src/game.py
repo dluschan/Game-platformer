@@ -49,6 +49,7 @@ class Game:
         self.animation_timer = 0
         self.jump_held = False
         self.camera_x = 0
+        self.time_left = 5
 
     def run(self):
         try:
@@ -72,9 +73,15 @@ class Game:
 
                 self.flying_enemy.fly()
 
+                self.update_time()
                 self.draw()
         finally:
             pygame.quit()
+
+    def update_time(self):
+        self.time_left -= self.clock.tick(60) / 1000
+        if self.time_left <= 0:
+            self.player_death()
 
     def draw(self):
         self.screen.fill((0, 0, 0))
@@ -87,7 +94,9 @@ class Game:
                 self.screen.blit(text, (10, 10 + i * 20))
 
         lives_text = pygame.font.SysFont(None, 32).render(f"Lives: {self.lives}", True, (255, 255, 255))
+        time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left}", True, (255, 255, 255))
         self.screen.blit(lives_text, (10, 10))
+        self.screen.blit(time_left_text, (10, 45))
         for obstacle in self.level.obstacles:
             pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
         for ground in self.level.ground:
@@ -99,7 +108,6 @@ class Game:
         self.screen.blit(self.flying_enemy.get_frame(),
                          (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
         pygame.display.flip()
-        self.clock.tick(60)
 
     def show_message(self, text, duration=1000):
         message = pygame.font.SysFont(None, 72).render(text, True, (255, 255, 255))
@@ -126,15 +134,17 @@ class Game:
     def resolve_player_enemies_collisions(self):
         for enemy in self.level.obstacles + [self.flying_enemy]:
             if self.player.rect.colliderect(enemy):
-                self.hit_sound.play()
-                self.lives -= 1
-                if self.lives != 0:
-                    self.show_message("CRASH!!!")
-                else:
-                    self.hit_sound.play()
-                    self.show_message("GAME OVER!!!")
-                    self.running = False
-                self.restart_level()
+                self.player_death()
+
+    def player_death(self):
+        self.hit_sound.play()
+        self.lives -= 1
+        if self.lives != 0:
+            self.show_message("CRASH!!!")
+        else:
+            self.show_message("GAME OVER!!!")
+            self.running = False
+        self.restart_level()
 
     def resolve_player_finish_collisions(self):
         if self.player.rect.colliderect(self.level.finish_platform):
