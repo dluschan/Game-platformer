@@ -13,7 +13,8 @@ class Game:
 
         pygame.mixer.music.load("../background.mp3")
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.3)
+        self.volume = 0.3
+        pygame.mixer.music.set_volume(self.volume)
 
         self.jump_sound = pygame.mixer.Sound("../jump.wav")
         self.hit_sound = pygame.mixer.Sound("../hit.wav")
@@ -166,6 +167,10 @@ class Game:
 
                 if event.key == pygame.K_d:
                     self.debug = not self.debug
+
+                if event.key == pygame.K_m:
+                    self.volume = 0.3 - self.volume
+                    pygame.mixer.music.set_volume(self.volume)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
