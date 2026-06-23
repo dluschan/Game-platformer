@@ -49,7 +49,7 @@ class Game:
         self.animation_timer = 0
         self.jump_held = False
         self.camera_x = 0
-        self.time_left = 5
+        self.time_left = self.level.time_left
 
     def run(self):
         try:
@@ -81,7 +81,7 @@ class Game:
     def update_time(self):
         self.time_left -= self.clock.tick(60) / 1000
         if self.time_left <= 0:
-            self.player_death()
+            self.player_death("TIME OUT")
 
     def draw(self):
         self.screen.fill((0, 0, 0))
@@ -134,13 +134,13 @@ class Game:
     def resolve_player_enemies_collisions(self):
         for enemy in self.level.obstacles + [self.flying_enemy]:
             if self.player.rect.colliderect(enemy):
-                self.player_death()
+                self.player_death("CRASH")
 
-    def player_death(self):
+    def player_death(self, message):
         self.hit_sound.play()
         self.lives -= 1
         if self.lives != 0:
-            self.show_message("CRASH!!!")
+            self.show_message(message)
         else:
             self.show_message("GAME OVER!!!")
             self.running = False

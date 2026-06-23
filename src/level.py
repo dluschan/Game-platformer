@@ -2,8 +2,9 @@ from pygame import Rect
 
 
 class Level:
-    def __init__(self, width, start_x, start_y, gravity, low_gravity, platforms, finish_platform, ground, obstacles):
+    def __init__(self, width, time_left, start_x, start_y, gravity, low_gravity, platforms, finish_platform, ground, obstacles):
         self.width = width
+        self.time_left = time_left
         self.start_x = start_x
         self.start_y = start_y
         self.gravity = gravity
@@ -16,6 +17,7 @@ class Level:
 levels = [
     Level(
         width = 8000,
+        time_left = 40,
         start_x = 100,
         start_y = 100,
         gravity = 0.55,
@@ -69,6 +71,7 @@ levels = [
     ),
     Level(
         width = 13000,
+        time_left = 20,
         start_x = 100,
         start_y = 100,
         gravity = 0.55,
