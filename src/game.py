@@ -164,6 +164,9 @@ class Game:
                         self.jump_held = True
                         self.jump_sound.play()
 
+                if event.key == pygame.K_d:
+                    self.debug = not self.debug
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     self.jump_held = False
@@ -181,9 +184,6 @@ class Game:
 
         if keys[pygame.K_RIGHT]:
             self.player.right()
-
-        if keys[pygame.K_d]:
-            self.debug = not self.debug
 
     def update_camera(self):
         left_border = self.camera_x + CAMERA_MARGIN
