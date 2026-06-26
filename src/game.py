@@ -74,13 +74,15 @@ class Game:
 
                 self.flying_enemy.fly()
 
-                self.update_time()
+                dt = self.clock.tick(60) / 1000
+
+                self.update_time(dt)
                 self.draw()
         finally:
             pygame.quit()
 
-    def update_time(self):
-        self.time_left -= self.clock.tick(60) / 1000
+    def update_time(self, delta_time):
+        self.time_left -= delta_time
         if self.time_left <= 0:
             self.player_death("TIME OUT")
 
@@ -101,10 +103,10 @@ class Game:
         for obstacle in self.level.obstacles:
             pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
         for ground in self.level.ground:
-            pygame.draw.rect(self.screen, (200, 200, 200), ground.move(-self.camera_x, 0))
-        pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.move(-self.camera_x, 0))
+            pygame.draw.rect(self.screen, (200, 200, 200), ground.rect.move(-self.camera_x, 0))
+        pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.rect.move(-self.camera_x, 0))
         for platform in self.level.platforms:
-            pygame.draw.rect(self.screen, (100, 255, 100), platform.move(-self.camera_x, 0))
+            pygame.draw.rect(self.screen, (100, 255, 100), platform.rect.move(-self.camera_x, 0))
         self.screen.blit(self.player.get_frame(), (self.player.rect.x - self.camera_x, self.player.rect.y))
         self.screen.blit(self.flying_enemy.get_frame(),
                          (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
@@ -120,14 +122,14 @@ class Game:
         pygame.time.delay(duration)  # задержка в миллисекундах
 
     def resolve_player_horizontal_collisions(self):
-        for rect in self.level.ground + self.level.platforms:
-            if self.player.rect.colliderect(rect):
-                self.player.horizontal_hit(rect)
+        for platform in self.level.ground + self.level.platforms:
+            if self.player.rect.colliderect(platform.rect):
+                self.player.horizontal_hit(platform.rect)
 
     def resolve_player_vertical_collisions(self):
-        for rect in self.level.ground + self.level.platforms:
-            if self.player.rect.colliderect(rect):
-                self.player.vertical_hit(rect)
+        for platform in self.level.ground + self.level.platforms:
+            if self.player.rect.colliderect(platform.rect):
+                self.player.vertical_hit(platform.rect)
                 break
         else:
             self.player.fly()
@@ -148,7 +150,7 @@ class Game:
         self.restart_level()
 
     def resolve_player_finish_collisions(self):
-        if self.player.rect.colliderect(self.level.finish_platform):
+        if self.player.rect.colliderect(self.level.finish_platform.rect):
             self.win_sound.play()
             self.show_message("WIN!", 1700)
             self.current_level = (self.current_level + 1) % len(self.levels)
