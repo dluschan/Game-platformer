@@ -7,10 +7,9 @@ WIDTH, HEIGHT = 800, 600
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen):
         pygame.init()
         pygame.mixer.init()
-
         pygame.mixer.music.load("../background.mp3")
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(0.3)
@@ -19,7 +18,7 @@ class Game:
         self.hit_sound = pygame.mixer.Sound("../hit.wav")
         self.win_sound = pygame.mixer.Sound("../win.wav")
 
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = screen
         self.background = pygame.image.load("../background.png").convert()
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
 
