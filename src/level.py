@@ -1,5 +1,5 @@
 from pygame import Rect
-from src.game_platform import Platform
+from src.game_platform import Platform, DisappearingPlatform
 
 
 class Level:
@@ -26,9 +26,9 @@ levels = [
         platforms = [
             Platform(600, 450, 120, 10),
             Platform(850, 350, 120, 10),
-            Platform(1010, 240, 120, 10),
-            Platform(1260, 400, 120, 10),
-            Platform(1480, 230, 120, 10),
+            DisappearingPlatform(1010, 240, 120, 10),
+            DisappearingPlatform(1260, 400, 120, 10),
+            DisappearingPlatform(1480, 230, 120, 10),
             Platform(1740, 300, 120, 10),
             Platform(1940, 360, 120, 10),
             Platform(2350 , 580, 150, 10),

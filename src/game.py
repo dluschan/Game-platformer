@@ -55,11 +55,10 @@ class Game:
     def run(self):
         try:
             while self.running:
+                dt = self.clock.tick(60) / 1000
+
                 self.handle_events()
                 self.handle_keys()
-
-                self.resolve_player_enemies_collisions()
-                self.resolve_player_finish_collisions()
 
                 # TODO low gravity while falling if space keydown
                 self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
@@ -70,13 +69,16 @@ class Game:
                 self.player.horizontal_update()
                 self.resolve_player_horizontal_collisions()
 
-                self.update_camera()
-
                 self.flying_enemy.fly()
+                self.resolve_player_enemies_collisions()
+                self.resolve_player_finish_collisions()
 
-                dt = self.clock.tick(60) / 1000
-
+                self.update_camera()
                 self.update_time(dt)
+
+                for platform in self.level.platforms:
+                    platform.update(dt, self.player)
+
                 self.draw()
         finally:
             pygame.quit()
@@ -100,13 +102,14 @@ class Game:
         time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left}", True, (255, 255, 255))
         self.screen.blit(lives_text, (10, 10))
         self.screen.blit(time_left_text, (10, 45))
+
         for obstacle in self.level.obstacles:
             pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
         for ground in self.level.ground:
-            pygame.draw.rect(self.screen, (200, 200, 200), ground.rect.move(-self.camera_x, 0))
+            ground.draw(self.screen, self.camera_x)
         pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.rect.move(-self.camera_x, 0))
         for platform in self.level.platforms:
-            pygame.draw.rect(self.screen, (100, 255, 100), platform.rect.move(-self.camera_x, 0))
+            platform.draw(self.screen, self.camera_x)
         self.screen.blit(self.player.get_frame(), (self.player.rect.x - self.camera_x, self.player.rect.y))
         self.screen.blit(self.flying_enemy.get_frame(),
                          (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
@@ -123,13 +126,20 @@ class Game:
 
     def resolve_player_horizontal_collisions(self):
         for platform in self.level.ground + self.level.platforms:
+            if not platform.is_solid():
+                continue
+
             if self.player.rect.colliderect(platform.rect):
                 self.player.horizontal_hit(platform.rect)
 
     def resolve_player_vertical_collisions(self):
         for platform in self.level.ground + self.level.platforms:
+            if not platform.is_solid():
+                continue
+
             if self.player.rect.colliderect(platform.rect):
                 self.player.vertical_hit(platform.rect)
+                platform.player_stand()
                 break
         else:
             self.player.fly()
