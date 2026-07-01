@@ -40,6 +40,9 @@ class Game:
         self.current_level = 0
         self.debug = False
 
+        self.prev_touched = set()
+        self.currect_touched = set()
+
         self.restart_level()
 
     def restart_level(self):
@@ -68,6 +71,8 @@ class Game:
 
                 self.player.horizontal_update()
                 self.resolve_player_horizontal_collisions()
+
+                self.update_touching()
 
                 self.flying_enemy.fly()
                 self.resolve_player_enemies_collisions()
@@ -131,6 +136,7 @@ class Game:
 
             if self.player.rect.colliderect(platform.rect):
                 self.player.horizontal_hit(platform.rect)
+                self.currect_touched.add(platform)
 
     def resolve_player_vertical_collisions(self):
         for platform in self.level.ground + self.level.platforms:
@@ -140,7 +146,9 @@ class Game:
             if self.player.rect.colliderect(platform.rect):
                 self.player.vertical_hit(platform.rect)
                 platform.player_stand()
+                self.currect_touched.add(platform)
                 break
+
         else:
             self.player.fly()
 
@@ -213,4 +221,11 @@ class Game:
 
         # ограничение камеры границами уровня
         self.camera_x = max(0, min(self.camera_x, self.level.width - WIDTH))
+
+    def update_touching(self):
+        for level_obj in self.prev_touched - self.currect_touched:
+            level_obj.untouch()
+        self.prev_touched = self.currect_touched
+        self.currect_touched = set()
+
 

@@ -8,6 +8,9 @@ class Platform:
     def update(self, dt, player):
         pass
 
+    def untouch(self):
+        pass
+
     def draw(self, screen, camera_x):
         draw.rect(screen, (200, 200, 200), self.rect.move(-camera_x, 0))
 
@@ -55,6 +58,10 @@ class DisappearingPlatform(Platform):
         if self.state == "IDLE":
             self.state = "TRIGGERED"
             self.timer = 0.0
+
+    def untouch(self):
+        if self.is_solid():
+            self.reset()
 
     def draw(self, screen, camera_x):
         if self.visible:
