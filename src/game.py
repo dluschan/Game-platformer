@@ -12,7 +12,8 @@ class Game:
         pygame.mixer.init()
         pygame.mixer.music.load("../background.mp3")
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.3)
+        self.volume = 0.3
+        pygame.mixer.music.set_volume(self.volume)
 
         self.jump_sound = pygame.mixer.Sound("../jump.wav")
         self.hit_sound = pygame.mixer.Sound("../hit.wav")
@@ -38,6 +39,9 @@ class Game:
         self.current_level = 0
         self.debug = False
 
+        self.prev_touched = set()
+        self.currect_touched = set()
+
         self.restart_level()
 
     def restart_level(self):
@@ -53,11 +57,10 @@ class Game:
     def run(self):
         try:
             while self.running:
+                dt = self.clock.tick(60) / 1000
+
                 self.handle_events()
                 self.handle_keys()
-
-                self.resolve_player_enemies_collisions()
-                self.resolve_player_finish_collisions()
 
                 # TODO low gravity while falling if space keydown
                 self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
@@ -68,17 +71,24 @@ class Game:
                 self.player.horizontal_update()
                 self.resolve_player_horizontal_collisions()
 
-                self.update_camera()
+                self.update_touching()
 
                 self.flying_enemy.fly()
+                self.resolve_player_enemies_collisions()
+                self.resolve_player_finish_collisions()
 
-                self.update_time()
+                self.update_camera()
+                self.update_time(dt)
+
+                for platform in self.level.platforms:
+                    platform.update(dt, self.player)
+
                 self.draw()
         finally:
             pygame.quit()
 
-    def update_time(self):
-        self.time_left -= self.clock.tick(60) / 1000
+    def update_time(self, delta_time):
+        self.time_left -= delta_time
         if self.time_left <= 0:
             self.player_death("TIME OUT")
 
@@ -96,13 +106,14 @@ class Game:
         time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left}", True, (255, 255, 255))
         self.screen.blit(lives_text, (10, 10))
         self.screen.blit(time_left_text, (10, 45))
+
         for obstacle in self.level.obstacles:
             pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
         for ground in self.level.ground:
-            pygame.draw.rect(self.screen, (200, 200, 200), ground.move(-self.camera_x, 0))
-        pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.move(-self.camera_x, 0))
+            ground.draw(self.screen, self.camera_x)
+        pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.rect.move(-self.camera_x, 0))
         for platform in self.level.platforms:
-            pygame.draw.rect(self.screen, (100, 255, 100), platform.move(-self.camera_x, 0))
+            platform.draw(self.screen, self.camera_x)
         self.screen.blit(self.player.get_frame(), (self.player.rect.x - self.camera_x, self.player.rect.y))
         self.screen.blit(self.flying_enemy.get_frame(),
                          (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
@@ -118,15 +129,25 @@ class Game:
         pygame.time.delay(duration)  # задержка в миллисекундах
 
     def resolve_player_horizontal_collisions(self):
-        for rect in self.level.ground + self.level.platforms:
-            if self.player.rect.colliderect(rect):
-                self.player.horizontal_hit(rect)
+        for platform in self.level.ground + self.level.platforms:
+            if not platform.is_solid():
+                continue
+
+            if self.player.rect.colliderect(platform.rect):
+                self.player.horizontal_hit(platform.rect)
+                self.currect_touched.add(platform)
 
     def resolve_player_vertical_collisions(self):
-        for rect in self.level.ground + self.level.platforms:
-            if self.player.rect.colliderect(rect):
-                self.player.vertical_hit(rect)
+        for platform in self.level.ground + self.level.platforms:
+            if not platform.is_solid():
+                continue
+
+            if self.player.rect.colliderect(platform.rect):
+                self.player.vertical_hit(platform.rect)
+                platform.player_stand()
+                self.currect_touched.add(platform)
                 break
+
         else:
             self.player.fly()
 
@@ -146,7 +167,7 @@ class Game:
         self.restart_level()
 
     def resolve_player_finish_collisions(self):
-        if self.player.rect.colliderect(self.level.finish_platform):
+        if self.player.rect.colliderect(self.level.finish_platform.rect):
             self.win_sound.play()
             self.show_message("WIN!", 1700)
             self.current_level = (self.current_level + 1) % len(self.levels)
@@ -162,6 +183,13 @@ class Game:
                     if self.player.jump():
                         self.jump_held = True
                         self.jump_sound.play()
+
+                if event.key == pygame.K_d:
+                    self.debug = not self.debug
+
+                if event.key == pygame.K_m:
+                    self.volume = 0.3 - self.volume
+                    pygame.mixer.music.set_volume(self.volume)
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
@@ -181,9 +209,6 @@ class Game:
         if keys[pygame.K_RIGHT]:
             self.player.right()
 
-        if keys[pygame.K_d]:
-            self.debug = not self.debug
-
     def update_camera(self):
         left_border = self.camera_x + CAMERA_MARGIN
         right_border = self.camera_x + WIDTH - CAMERA_MARGIN
@@ -195,4 +220,11 @@ class Game:
 
         # ограничение камеры границами уровня
         self.camera_x = max(0, min(self.camera_x, self.level.width - WIDTH))
+
+    def update_touching(self):
+        for level_obj in self.prev_touched - self.currect_touched:
+            level_obj.untouch()
+        self.prev_touched = self.currect_touched
+        self.currect_touched = set()
+
 
