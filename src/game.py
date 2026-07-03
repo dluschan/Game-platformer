@@ -7,19 +7,14 @@ WIDTH, HEIGHT = 800, 600
 CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 
 class Game:
-    def __init__(self, screen):
-        pygame.init()
-        pygame.mixer.init()
-        pygame.mixer.music.load("../background.mp3")
-        pygame.mixer.music.play(-1)
-        self.volume = 0.3
-        pygame.mixer.music.set_volume(self.volume)
+    def __init__(self, app):
 
         self.jump_sound = pygame.mixer.Sound("../jump.wav")
         self.hit_sound = pygame.mixer.Sound("../hit.wav")
         self.win_sound = pygame.mixer.Sound("../win.wav")
 
-        self.screen = screen
+        self.app = app
+        self.screen = app.screen
         self.background = pygame.image.load("../background.png").convert()
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
 
@@ -32,9 +27,6 @@ class Game:
         self.player = Player(player_frames, 100, 100, 36)
         self.flying_enemy = FlyingEnemy(flying_enemy_frames, 2000, 100, 36, [(2000, 100), (1000, 300)])
 
-        self.clock = pygame.time.Clock()
-        self.lives = 4
-        self.running = True
         self.levels = levels
         self.current_level = 0
         self.debug = False
@@ -42,6 +34,8 @@ class Game:
         self.prev_touched = set()
         self.currect_touched = set()
 
+    def start(self):
+        self.lives = 4
         self.restart_level()
 
     def restart_level(self):
@@ -54,38 +48,27 @@ class Game:
         self.camera_x = 0
         self.time_left = self.level.time_left
 
-    def run(self):
-        try:
-            while self.running:
-                dt = self.clock.tick(60) / 1000
+    def update(self, dt):
+        # TODO low gravity while falling if space keydown
+        self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
 
-                self.handle_events()
-                self.handle_keys()
+        self.player.vertical_update()
+        self.resolve_player_vertical_collisions()
 
-                # TODO low gravity while falling if space keydown
-                self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
+        self.player.horizontal_update()
+        self.resolve_player_horizontal_collisions()
 
-                self.player.vertical_update()
-                self.resolve_player_vertical_collisions()
+        self.update_touching()
 
-                self.player.horizontal_update()
-                self.resolve_player_horizontal_collisions()
+        self.flying_enemy.fly()
+        self.resolve_player_enemies_collisions()
+        self.resolve_player_finish_collisions()
 
-                self.update_touching()
+        self.update_camera()
+        self.update_time(dt)
 
-                self.flying_enemy.fly()
-                self.resolve_player_enemies_collisions()
-                self.resolve_player_finish_collisions()
-
-                self.update_camera()
-                self.update_time(dt)
-
-                for platform in self.level.platforms:
-                    platform.update(dt, self.player)
-
-                self.draw()
-        finally:
-            pygame.quit()
+        for platform in self.level.platforms:
+            platform.update(dt, self.player)
 
     def update_time(self, delta_time):
         self.time_left -= delta_time
@@ -163,7 +146,7 @@ class Game:
             self.show_message(message)
         else:
             self.show_message("GAME OVER!!!")
-            self.running = False
+            self.app.mode = "menu"
         self.restart_level()
 
     def resolve_player_finish_collisions(self):
@@ -173,8 +156,8 @@ class Game:
             self.current_level = (self.current_level + 1) % len(self.levels)
             self.restart_level()
 
-    def handle_events(self):
-        for event in pygame.event.get():
+    def handle_events(self, events):
+        for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
 
@@ -201,8 +184,7 @@ class Game:
                 if event.key == pygame.K_RIGHT:
                     self.player.stop()
 
-    def handle_keys(self):
-        keys = pygame.key.get_pressed()
+    def handle_keys(self, keys):
         if keys[pygame.K_LEFT]:
             self.player.left()
 
