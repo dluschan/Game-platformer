@@ -6,8 +6,10 @@ from src.button import Button
 class Menu:
     def __init__(self, app):
         self.app = app
-        self.buttons = {Button("start",300, 200, 200, 50, self.app.start_game)}
-        self.clock = pygame.time.Clock()
+        self.buttons = [
+            Button("Start",300, 200, 200, 60, self.start_game),
+            Button("Quit",300, 300, 200, 60, self.quit)
+        ]
 
     def handle_events(self, events):
         for event in events:
@@ -19,9 +21,9 @@ class Menu:
         for button in self.buttons:
             button.draw(self.app.screen)
 
-    def run(self):
-        while True:
-            self.draw()
-            self.handle_events(pygame.event.get())
-            self.clock.tick(60)
-            pygame.display.flip()
+    def start_game(self):
+        self.app.mode = "game"
+        self.app.game.start()
+
+    def quit(self):
+        self.app.running = False
