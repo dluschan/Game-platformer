@@ -9,6 +9,10 @@ CAMERA_MARGIN = WIDTH * 0.4  # зона покоя
 class Game:
     def __init__(self, app):
 
+        self.time_left = 0
+        self.camera_x = 0
+        self.jump_held = False
+        self.lives = 0
         self.jump_sound = pygame.mixer.Sound("../jump.wav")
         self.hit_sound = pygame.mixer.Sound("../hit.wav")
         self.win_sound = pygame.mixer.Sound("../win.wav")
@@ -29,10 +33,11 @@ class Game:
 
         self.levels = levels
         self.current_level = 0
+        self.level = self.levels[self.current_level]
         self.debug = False
 
         self.prev_touched = set()
-        self.currect_touched = set()
+        self.current_touched = set()
 
     def start(self):
         self.lives = 4
@@ -41,9 +46,7 @@ class Game:
     def restart_level(self):
         self.level = self.levels[self.current_level]
         self.player.respawn(self.level.start_x, self.level.start_y)
-        self.enemy_target_index = 1
 
-        self.animation_timer = 0
         self.jump_held = False
         self.camera_x = 0
         self.time_left = self.level.time_left
@@ -118,7 +121,7 @@ class Game:
 
             if self.player.rect.colliderect(platform.rect):
                 self.player.horizontal_hit(platform.rect)
-                self.currect_touched.add(platform)
+                self.current_touched.add(platform)
 
     def resolve_player_vertical_collisions(self):
         for platform in self.level.ground + self.level.platforms:
@@ -128,7 +131,7 @@ class Game:
             if self.player.rect.colliderect(platform.rect):
                 self.player.vertical_hit(platform.rect)
                 platform.player_stand()
-                self.currect_touched.add(platform)
+                self.current_touched.add(platform)
                 break
 
         else:
@@ -197,9 +200,9 @@ class Game:
         self.camera_x = max(0, min(self.camera_x, self.level.width - WIDTH))
 
     def update_touching(self):
-        for level_obj in self.prev_touched - self.currect_touched:
+        for level_obj in self.prev_touched - self.current_touched:
             level_obj.untouch()
-        self.prev_touched = self.currect_touched
-        self.currect_touched = set()
+        self.prev_touched = self.current_touched
+        self.current_touched = set()
 
 
