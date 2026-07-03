@@ -17,7 +17,6 @@ class App:
         pygame.mixer.music.play(-1)
         self.volume = 0.3
         pygame.mixer.music.set_volume(self.volume)
-
         self.clock = pygame.time.Clock()
 
         self.running = True
@@ -37,6 +36,10 @@ class App:
             for event in events:
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_m:
+                        self.volume = 0.3 - self.volume
+                        pygame.mixer.music.set_volume(self.volume)
 
             if self.mode == "menu":
                 self.menu.handle_events(events)
@@ -48,6 +51,7 @@ class App:
 
                 self.game.update(dt)
                 self.game.draw()
+
 
             pygame.display.flip()
 

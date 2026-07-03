@@ -170,10 +170,6 @@ class Game:
                 if event.key == pygame.K_d:
                     self.debug = not self.debug
 
-                if event.key == pygame.K_m:
-                    self.volume = 0.3 - self.volume
-                    pygame.mixer.music.set_volume(self.volume)
-
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     self.jump_held = False
