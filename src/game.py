@@ -158,9 +158,6 @@ class Game:
 
     def handle_events(self, events):
         for event in events:
-            if event.type == pygame.QUIT:
-                self.running = False
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if self.player.jump():
