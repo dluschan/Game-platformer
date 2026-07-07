@@ -78,17 +78,22 @@ levels = [
         gravity = 0.55,
         low_gravity = 0.34,
         platforms = [
-            Platform(600, 450, 120, 10),
-            Platform(850, 350, 120, 10),
-            Platform(1010, 240, 120, 10),
+            Platform(600, 550, 120, 10),
+            Platform(850, 350, 10, 10),
+            Platform(1000, 140, 120, 10),
             Platform(1260, 400, 120, 10),
-            Platform(1480, 230, 120, 10),
-            Platform(1740, 300, 120, 10),
+            Platform(1580, 230, 120, 10),
+            Platform(1840, 500, 120, 10),
+            Platform(2040, 380, 10, 10),
+            Platform(2270, 190, 120, 10),
+            Platform(2400, 500, 120, 10),
+
         ],
         finish_platform = Platform(1860, 450, 140, 10),
         ground = [
             Platform(0, 550, 600, 50),
             Platform(800, 550, 1200, 50),
+            Platform(23700, 300, 10, 120),
         ],
         obstacles = [
             Rect(420, 350, 100, 10),
