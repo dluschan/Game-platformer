@@ -69,3 +69,47 @@ class DisappearingPlatform(Platform):
 
     def is_solid(self):
         return self.visible
+
+
+class FallingPlatform(Platform):
+    def __init__(self, left, top, width, height, delay=2.0, falling_time=2.0):
+        super().__init__(left, top, width, height)
+
+        self.delay = delay
+        self.falling_time = falling_time
+        self.velocity_y = 0
+        self.start_rect = self.rect.copy()
+        self.state = "IDLE"
+        self.timer = 0.0
+
+    def reset(self):
+        self.state = "IDLE"
+        self.timer = 0.0
+        self.rect = self.start_rect.copy()
+        self.velocity_y = 0
+
+    def update(self, dt, player):
+        if self.state == "IDLE":
+            pass
+
+        elif self.state == "TRIGGERED":
+            self.timer += dt
+            if self.timer >= self.delay:
+                self.state = "FALLING"
+                self.timer = 0.0
+
+        elif self.state == "FALLING":
+            self.timer += dt
+            self.velocity_y += 0.55
+            self.rect.y += self.velocity_y
+            if self.timer >= self.falling_time:
+                self.reset()
+
+    def player_stand(self):
+        if self.state == "IDLE":
+            self.state = "TRIGGERED"
+            self.timer = 0.0
+
+    def draw(self, screen, camera_x):
+        draw.rect(screen,(255, 80, int((self.delay - self.timer) / self.delay * 255)), self.rect.move(-camera_x, 0))
+
