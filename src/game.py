@@ -52,6 +52,9 @@ class Game:
         self.time_left = self.level.time_left
 
     def update(self, dt):
+        for platform in self.level.platforms:
+            platform.update(dt, self.player)
+
         # TODO low gravity while falling if space keydown
         self.player.apply_gravity(self.level.low_gravity if self.jump_held else self.level.gravity)
 
@@ -69,9 +72,6 @@ class Game:
 
         self.update_camera()
         self.update_time(dt)
-
-        for platform in self.level.platforms:
-            platform.update(dt, self.player)
 
     def update_time(self, delta_time):
         self.time_left -= delta_time
@@ -129,7 +129,7 @@ class Game:
                 continue
 
             if self.player.rect.colliderect(platform.rect):
-                self.player.vertical_hit(platform.rect)
+                self.player.vertical_hit(platform)
                 platform.player_stand()
                 self.current_touched.add(platform)
                 break
