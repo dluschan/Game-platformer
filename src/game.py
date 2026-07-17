@@ -87,11 +87,11 @@ class Game:
             for i, line in enumerate(lines):
                 text = pygame.font.SysFont(None, 24).render(line, True, (255, 255, 255))
                 self.screen.blit(text, (10, 10 + i * 20))
-
-        lives_text = pygame.font.SysFont(None, 32).render(f"Lives: {self.lives}", True, (255, 255, 255))
-        time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left:.1f}", True, (255, 255, 255))
-        self.screen.blit(lives_text, (10, 10))
-        self.screen.blit(time_left_text, (10, 45))
+        else:
+            lives_text = pygame.font.SysFont(None, 32).render(f"Lives: {self.lives}", True, (255, 255, 255))
+            time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left:.1f}", True, (255, 255, 255))
+            self.screen.blit(lives_text, (10, 10))
+            self.screen.blit(time_left_text, (10, 45))
 
         for obstacle in self.level.obstacles:
             pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
