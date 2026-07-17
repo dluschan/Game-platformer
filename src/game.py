@@ -89,7 +89,7 @@ class Game:
                 self.screen.blit(text, (10, 10 + i * 20))
 
         lives_text = pygame.font.SysFont(None, 32).render(f"Lives: {self.lives}", True, (255, 255, 255))
-        time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left}", True, (255, 255, 255))
+        time_left_text = pygame.font.SysFont(None, 32).render(f"Time Left:{self.time_left:.1f}", True, (255, 255, 255))
         self.screen.blit(lives_text, (10, 10))
         self.screen.blit(time_left_text, (10, 45))
 
