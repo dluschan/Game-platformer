@@ -4,6 +4,7 @@ from pygame import Rect, draw
 class Platform:
     def __init__(self, left, top, width, height):
         self.rect = Rect(left, top, width, height)
+        self.velocity_y = 0
 
     def update(self, dt, player):
         pass
@@ -77,7 +78,6 @@ class FallingPlatform(Platform):
 
         self.delay = delay
         self.falling_time = falling_time
-        self.velocity_y = 0
         self.start_rect = self.rect.copy()
         self.state = "IDLE"
         self.timer = 0.0

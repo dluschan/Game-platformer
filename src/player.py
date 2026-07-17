@@ -6,6 +6,7 @@ class Player:
         self.frames = frames
         self.x_force_active = False
         self.on_ground = False
+        self.on_ground_platform = None
         self.animation_timer = 0
         self.animation_speed = animation_speed
         self.player_current_frame = 0
@@ -45,19 +46,21 @@ class Player:
         self.velocity_x = 0
         self.velocity_y = 0
 
-    def vertical_hit(self, rect):
+    def vertical_hit(self, platform):
         if self.velocity_y > 0:
-            self.land_on(rect)
+            self.land_on(platform)
         else:
-            self.hit_ceiling(rect)
+            self.hit_ceiling(platform)
 
-    def land_on(self, rect):
-        self.rect.bottom = rect.top
-        self.velocity_y = 0
+    def land_on(self, platform):
+        self.rect.bottom = platform.rect.top
+        self.velocity_y = platform.velocity_y
         self.on_ground = True
+        self.on_ground_platform = platform
 
-    def hit_ceiling(self, rect):
-        self.rect.top = rect.bottom
+    def hit_ceiling(self, platform):
+        self.rect.top = platform.rect.bottom
+        # TODO: This code doesn't support other platform types yet.
         self.velocity_y = 0
 
     def horizontal_hit(self, rect):
@@ -70,12 +73,19 @@ class Player:
         if self.on_ground:
             self.on_ground = False
             self.velocity_y = -12
+            self.on_ground_platform = None
             return True
         else:
             return False
 
     def fly(self):
-        self.on_ground = False
+        if not self.on_ground_platform or not (
+            self.on_ground_platform.rect.top == self.rect.bottom and
+            self.rect.left <= self.on_ground_platform.rect.right and
+            self.rect.right >= self.on_ground_platform.rect.left
+        ):
+            self.on_ground = False
+            self.on_ground_platform = None
 
     def vertical_update(self):
         self.rect.y += self.velocity_y
