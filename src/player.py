@@ -57,6 +57,7 @@ class Player:
         self.velocity_y = platform.velocity_y
         self.on_ground = True
         self.on_ground_platform = platform
+        platform.player_stand()
 
     def hit_ceiling(self, platform):
         self.rect.top = platform.rect.bottom

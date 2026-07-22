@@ -130,7 +130,6 @@ class Game:
 
             if self.player.rect.colliderect(platform.rect):
                 self.player.vertical_hit(platform)
-                platform.player_stand()
                 self.current_touched.add(platform)
                 break
 
