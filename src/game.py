@@ -51,6 +51,9 @@ class Game:
         self.camera_x = 0
         self.time_left = self.level.time_left
 
+        for platform in self.level.platforms:
+            platform.reset()
+
     def update(self, dt):
         for platform in self.level.platforms:
             platform.update(dt, self.player)
