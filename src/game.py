@@ -100,7 +100,7 @@ class Game:
         self.level.finish_platform.draw(self.screen, self.camera_x)
         for platform in self.level.platforms:
             platform.draw(self.screen, self.camera_x)
-        self.screen.blit(self.player.get_frame(), (self.player.rect.x - self.camera_x, self.player.rect.y))
+        self.player.draw(self.screen, self.camera_x)
         self.screen.blit(self.flying_enemy.get_frame(),
                          (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
         pygame.display.flip()
