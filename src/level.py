@@ -1,5 +1,5 @@
 from hazards import Obstacle
-from src.platforms import Platform, DisappearingPlatform
+from src.platforms import Platform, DisappearingPlatform, FinishPlatform
 
 
 class Level:
@@ -52,7 +52,7 @@ levels = [
             Platform(7090, 270, 120, 10),
             Platform(7490, 400, 120, 10),
         ],
-        finish_platform = Platform(7860, 450, 140, 10),
+        finish_platform = FinishPlatform(7860, 450, 140, 10),
         ground = [
             Platform(0, 550, 600, 50),
             Platform(-50, 0, 55, 600),
@@ -89,7 +89,7 @@ levels = [
             Platform(2400, 500, 120, 10),
 
         ],
-        finish_platform = Platform(12860, 450, 140, 10),
+        finish_platform = FinishPlatform(12860, 450, 140, 10),
         ground = [
             Platform(0, 550, 600, 50),
             Platform(-50, 0, 55, 600),

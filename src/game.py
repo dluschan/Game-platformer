@@ -97,7 +97,7 @@ class Game:
             obstacle.draw(self.screen, self.camera_x)
         for ground in self.level.ground:
             ground.draw(self.screen, self.camera_x)
-        pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.rect.move(-self.camera_x, 0))
+        self.level.finish_platform.draw(self.screen, self.camera_x)
         for platform in self.level.platforms:
             platform.draw(self.screen, self.camera_x)
         self.screen.blit(self.player.get_frame(), (self.player.rect.x - self.camera_x, self.player.rect.y))
