@@ -101,8 +101,7 @@ class Game:
         for platform in self.level.platforms:
             platform.draw(self.screen, self.camera_x)
         self.player.draw(self.screen, self.camera_x)
-        self.screen.blit(self.flying_enemy.get_frame(),
-                         (self.flying_enemy.rect.x - self.camera_x, self.flying_enemy.rect.y))
+        self.flying_enemy.draw(self.screen, self.camera_x)
         pygame.display.flip()
 
     def show_message(self, text, duration=1000):
