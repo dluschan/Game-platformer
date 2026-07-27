@@ -94,7 +94,7 @@ class Game:
             self.screen.blit(time_left_text, (10, 45))
 
         for obstacle in self.level.obstacles:
-            pygame.draw.rect(self.screen, (200, 10, 20), obstacle.move(-self.camera_x, 0))
+            pygame.draw.rect(self.screen, (200, 10, 20), obstacle.rect.move(-self.camera_x, 0))
         for ground in self.level.ground:
             ground.draw(self.screen, self.camera_x)
         pygame.draw.rect(self.screen, (159, 10, 100), self.level.finish_platform.rect.move(-self.camera_x, 0))
