@@ -146,12 +146,15 @@ class Game:
             self.app.mode = "menu"
         self.restart_level()
 
+    def player_win(self):
+        self.win_sound.play()
+        self.show_message("WIN!", 1700)
+        self.current_level = (self.current_level + 1) % len(self.levels)
+        self.restart_level()
+
     def resolve_player_finish_collisions(self):
         if self.player.rect.colliderect(self.level.finish_platform.rect):
-            self.win_sound.play()
-            self.show_message("WIN!", 1700)
-            self.current_level = (self.current_level + 1) % len(self.levels)
-            self.restart_level()
+            self.player_win()
 
     def handle_events(self, events):
         for event in events:
