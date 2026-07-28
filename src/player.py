@@ -47,9 +47,9 @@ class Player:
         self.velocity_y = 0
 
     def vertical_hit(self, platform):
-        if self.velocity_y > 0:
+        if self.rect.y <= platform.rect.y and self.velocity_y >= platform.velocity_y:
             self.land_on(platform)
-        else:
+        if self.rect.y >= platform.rect.y and self.velocity_y <= platform.velocity_y:
             self.hit_ceiling(platform)
 
     def land_on(self, platform):
@@ -61,8 +61,7 @@ class Player:
 
     def hit_ceiling(self, platform):
         self.rect.top = platform.rect.bottom
-        # TODO: This code doesn't support other platform types yet.
-        self.velocity_y = 0
+        self.velocity_y = platform.velocity_y
 
     def horizontal_hit(self, rect):
         if self.velocity_x > 0:
