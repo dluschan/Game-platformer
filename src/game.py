@@ -93,15 +93,8 @@ class Game:
             self.screen.blit(lives_text, (10, 10))
             self.screen.blit(time_left_text, (10, 45))
 
-        for obstacle in self.level.obstacles:
+        for obstacle in self.level.obstacles + self.level.ground + self.level.platforms + [self.level.finish_platform, self.player, self.flying_enemy]:
             obstacle.draw(self.screen, self.camera_x)
-        for ground in self.level.ground:
-            ground.draw(self.screen, self.camera_x)
-        self.level.finish_platform.draw(self.screen, self.camera_x)
-        for platform in self.level.platforms:
-            platform.draw(self.screen, self.camera_x)
-        self.player.draw(self.screen, self.camera_x)
-        self.flying_enemy.draw(self.screen, self.camera_x)
         pygame.display.flip()
 
     def show_message(self, text, duration=1000):
